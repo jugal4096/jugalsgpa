@@ -1,0 +1,272 @@
+/* ================= RESET ================= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+/* ================= BODY ================= */
+body {
+  height: 100vh;
+  overflow: hidden;
+  color: #fff;
+  background: #000;
+}
+
+/* ================= BACKGROUND VIDEO ================= */
+.bg-video {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -3;
+  filter: brightness(1.05) contrast(1.1) saturate(1.15);
+}
+
+/* ================= GRADIENT OVERLAY ================= */
+.gradient-overlay {
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(circle at top, rgba(102,126,234,0.25), transparent 50%),
+    linear-gradient(135deg, rgba(10,10,40,0.75), rgba(0,0,0,0.9));
+  z-index: -2;
+}
+
+/* ================= CONTENT ================= */
+.content {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 20px;
+  animation: fadeUp 1.1s ease forwards;
+}
+
+/* ================= TITLES ================= */
+.title {
+  font-size: clamp(28px, 5vw, 44px);
+  font-weight: 700;
+  margin-bottom: 6px;
+  letter-spacing: 0.5px;
+  text-shadow: 0 10px 30px rgba(0,0,0,0.6);
+}
+
+.subtitle {
+  font-size: 15px;
+  opacity: 0.9;
+  margin-bottom: 28px;
+  color: #e5e7eb;
+}
+
+/* ================= FORM CARD ================= */
+.form {
+  width: 100%;
+  max-width: 360px;
+  padding: 28px 24px;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.12);
+  backdrop-filter: blur(18px);
+  box-shadow:
+    0 25px 60px rgba(0,0,0,0.55),
+    inset 0 0 0 1px rgba(255,255,255,0.25);
+  animation: floatCard 3.5s ease-in-out infinite;
+}
+
+/* ================= INPUTS ================= */
+.form input,
+.form select {
+  width: 100%;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+  border-radius: 12px;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  background: rgba(255,255,255,0.95);
+  color: #020617;
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.form input::placeholder {
+  color: #64748b;
+}
+
+.form input:focus,
+.form select:focus {
+  box-shadow: 0 0 0 3px rgba(102,126,234,0.35);
+  transform: translateY(-1px);
+}
+
+/* ================= BUTTON ================= */
+.form button {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 15px;
+  color: #fff;
+  cursor: pointer;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  box-shadow: 0 12px 35px rgba(102,126,234,0.45);
+  transition: all 0.3s ease;
+}
+
+.form button:hover {
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 22px 45px rgba(118,75,162,0.65);
+}
+
+/* ================= ANIMATIONS ================= */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Subtle floating effect for interest */
+@keyframes floatCard {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+/* ================= MOBILE ================= */
+@media (max-width: 480px) {
+  .form {
+    padding: 22px 18px;
+  }
+
+  .subtitle {
+    font-size: 14px;
+  }
+}
+/* ================= AUTH CORNER (TOP RIGHT) ================= */
+.auth-corner {
+  position: fixed;
+  top: 22px;
+  right: 26px;
+  display: flex;
+  gap: 12px;
+  z-index: 50;
+}
+
+/* Base button */
+.auth-btn {
+  padding: 7px 16px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 999px;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(12px);
+  transition: all 0.25s ease;
+}
+
+/* Hover effect */
+.auth-btn:hover {
+  background: rgba(255, 255, 255, 0.28);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.35);
+}
+
+/* Register / Accent button */
+.accent-btn {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border: none;
+  color: #fff;
+  box-shadow: 0 10px 30px rgba(118, 75, 162, 0.45);
+}
+
+.accent-btn:hover {
+  box-shadow: 0 18px 45px rgba(118, 75, 162, 0.65);
+}
+
+/* ================= MOBILE ADJUST ================= */
+@media (max-width: 480px) {
+  .auth-corner {
+    top: 14px;
+    right: 14px;
+    gap: 8px;
+  }
+
+  .auth-btn {
+    padding: 6px 12px;
+    font-size: 0.75rem;
+  }
+}
+/* ================= USER BADGE ================= */
+.user-badge {
+  position: relative;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 10px 30px rgba(118,75,162,0.45);
+}
+
+.user-badge span {
+  color: #fff;
+}
+
+.hidden {
+  display: none;
+}
+
+/* ================= BADGE DROPDOWN ================= */
+.badge-menu {
+  position: absolute;
+  top: 48px;
+  right: 0;
+  min-width: 160px;
+  background: rgba(15, 23, 42, 0.95);
+  border-radius: 14px;
+  padding: 6px;
+  display: none;
+  box-shadow: 0 20px 45px rgba(0,0,0,0.55);
+  border: 1px solid rgba(255,255,255,0.15);
+  backdrop-filter: blur(12px);
+  z-index: 100;
+}
+
+.badge-menu button {
+  width: 100%;
+  padding: 10px 12px;
+  background: transparent;
+  border: none;
+  color: #f9fafb;
+  text-align: left;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background 0.2s ease;
+}
+
+.badge-menu button:hover {
+  background: rgba(255,255,255,0.12);
+}
+
+

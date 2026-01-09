@@ -1,0 +1,200 @@
+/* ================= RESET ================= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* ================= BODY ================= */
+body {
+  height: 100vh;
+  overflow: hidden;
+  font-family: 'Inter', sans-serif;
+  background: #070910;
+  color: #fff;
+}
+
+/* ================= BACKGROUND ================= */
+.bg {
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 30%, rgba(0,255,255,0.18), transparent 35%),
+    radial-gradient(circle at 80% 30%, rgba(168,85,247,0.18), transparent 40%);
+  filter: blur(55px);
+}
+
+/* ================= GLASS ================= */
+.glass {
+  background: rgba(255,255,255,0.035);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+/* ================= LAYOUT ================= */
+.container {
+  position: relative;
+  height: 100vh;
+  padding: 32px 6vw;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 20px;
+}
+
+/* ================= HEADER ================= */
+.hero {
+  text-align: center;
+}
+
+.hero h1 {
+  font-family: 'Cinzel', serif;
+  font-size: 2.6rem;
+}
+
+.hero span {
+  background: linear-gradient(90deg, #00ffe7, #a855f7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero p {
+  font-size: 0.9rem;
+  opacity: 0.75;
+  margin-top: 6px;
+}
+
+/* ================= PROGRAM GRID ================= */
+.programs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+  align-items: center;
+}
+
+/* ================= CARD ================= */
+.card {
+  height: 340px;
+  border-radius: 22px;
+  overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  background: #000;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* ================= IMAGE ================= */
+.image {
+  flex: 1;
+  background-size: cover;
+  background-position: center top;
+}
+
+.image.btech { background-image: url("btech.png"); }
+.image.mca   { background-image: url("mca.png"); }
+.image.mtech { background-image: url("mtech.png"); }
+
+/* ================= LABEL ================= */
+.label {
+  padding: 14px 18px;
+  background: linear-gradient(
+    to top,
+    rgba(0,0,0,0.9),
+    rgba(0,0,0,0.6)
+  );
+}
+
+.label h2 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.6rem;
+}
+
+.label span {
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+/* ================= HOVER ================= */
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow:
+    0 0 25px rgba(0,255,255,0.3),
+    0 0 40px rgba(168,85,247,0.25);
+}
+
+/* ================= MOBILE ================= */
+@media (max-width: 900px) {
+  body {
+    overflow-y: auto;
+  }
+
+  .programs {
+    grid-template-columns: 1fr;
+  }
+
+  .card {
+    height: 260px;
+  }
+}
+
+/* ================= POPUP ================= */
+
+.hidden {
+  display: none;
+}
+
+.popup {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+}
+
+/* popup container */
+.popup-box {
+  display: flex;
+  gap: 22px;
+  padding: 28px;
+  border-radius: 20px;
+  max-width: 520px;
+  align-items: center;
+}
+
+/* gif */
+.popup-gif img {
+  width: 120px;
+  height: auto;
+  border-radius: 14px;
+}
+
+/* text */
+.popup-text {
+  text-align: left;
+}
+
+.popup-text h3 {
+  font-family: 'Orbitron', sans-serif;
+  margin-bottom: 10px;
+}
+
+.popup-text p {
+  font-size: 0.95rem;
+  opacity: 0.85;
+  margin-bottom: 18px;
+}
+
+/* button */
+.popup-text button {
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(90deg, #00ffe7, #a855f7);
+  color: #000;
+  font-weight: 600;
+}
+

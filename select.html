@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Select Program | GECA Planner</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@400;500;600&family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="select.css">
+</head>
+
+<body>
+
+  <div class="bg"></div>
+
+  <main class="container glass">
+
+    <header class="hero">
+      <h1>Select Your <span>Program</span></h1>
+      <p>Please choose the course you are currently pursuing</p>
+    </header>
+
+    <section class="programs">
+
+      <!-- BTECH -->
+      <div class="card" onclick="selectProgram('BTECH')">
+        <div class="image btech"></div>
+        <div class="label">
+          <h2>B.Tech</h2>
+          <span>Undergraduate Engineering</span>
+        </div>
+      </div>
+
+      <!-- MCA -->
+      <div class="card" onclick="selectProgram('MCA')">
+        <div class="image mca"></div>
+        <div class="label">
+          <h2>MCA</h2>
+          <span>Master of Computer Applications</span>
+        </div>
+      </div>
+
+      <!-- MTECH (DISABLED) -->
+      <div class="card disabled">
+        <div class="image mtech"></div>
+
+        <div class="coming-soon-badge">Coming Soon</div>
+
+        <div class="label">
+          <h2>M.Tech</h2>
+          <span>Postgraduate Engineering</span>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <script src="select.js"></script>
+</body>
+</html>

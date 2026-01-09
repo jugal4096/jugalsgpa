@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>GECA AI Assistant</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Orbitron:wght@600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="ai.css" />
+</head>
+
+<body>
+
+  <!-- 🎥 Animated Background Video -->
+  <video class="bg-video" autoplay muted loop playsinline>
+    <source src="Animated_Dancing_Duo_for_Website_Background.mp4" type="video/mp4">
+  </video>
+  <div class="bg-overlay"></div>
+
+  <!-- 👤 PROFILE CORNER -->
+  <div class="profile-corner" id="profileCorner">
+    <div class="profile-badge" id="profileBadge" title="Profile">
+      <span id="profileInitial">U</span>
+    </div>
+
+    <!-- Dropdown Menu -->
+    <div class="profile-menu hidden" id="profileMenu">
+      <button id="editProfileBtn">✏️ Edit Profile</button>
+      <button id="logoutBtn" class="danger">🚪 Logout</button>
+    </div>
+  </div>
+
+  <!-- 🤖 AI PAGE -->
+  <div class="ai-page">
+
+    <div class="ai-card">
+
+      <!-- Header -->
+      <div class="ai-header">
+        <div>
+          <h1>GECA AI</h1>
+          <p>Your calm academic companion</p>
+        </div>
+        <button class="ai-close" title="Back">✕</button>
+      </div>
+
+      <!-- Messages -->
+      <div class="ai-messages" id="aiMessages">
+        <div class="ai-bubble ai">
+          👋 Hey! I’m your friendly GECA senior.<br>
+          I’ll help you plan SGPA, CGPA & semesters.
+        </div>
+      </div>
+
+      <!-- Suggestions -->
+      <div class="ai-suggestions">
+        <button>Improve my SGPA</button>
+        <button>Can I reach 8+ CGPA?</button>
+        <button>Plan my semesters</button>
+      </div>
+
+      <!-- Input -->
+      <div class="ai-input">
+        <input type="text" placeholder="Ask me anything…" />
+        <button>➤</button>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Logic -->
+  <script src="ai.js"></script>
+</body>
+</html>

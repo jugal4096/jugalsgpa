@@ -16,20 +16,14 @@ const normalize = v => String(v || "").replace(/\s+/g, "").toUpperCase();
 let profile = null;
 let sheetCache = null;
 
-/* ================= PROFILE ================= */
+/* ================= PROFILE LOADING ================= */
 function loadProfile() {
-  return (
-    JSON.parse(localStorage.getItem("profile")) ||
-    JSON.parse(sessionStorage.getItem("profile"))
-  );
-}
-
-function getGuestProfile() {
-  return {
-    admissionMode: "Regular",
-    branch: "IT",
-    scheme: "NEP"
-  };
+  // Logged-in users → persistent
+  if (localStorage.getItem("isLoggedIn") === "true") {
+    return JSON.parse(localStorage.getItem("profile"));
+  }
+  // Guests → session-only
+  return JSON.parse(sessionStorage.getItem("profile"));
 }
 
 /* ================= SEMESTER LOGIC ================= */
@@ -51,7 +45,7 @@ function populateSemesterDropdown() {
   });
 }
 
-/* ================= LOAD CSV ================= */
+/* ================= LOAD CSV ONCE ================= */
 function loadSheetOnce() {
   return new Promise(resolve => {
     if (sheetCache) return resolve(sheetCache);
@@ -97,7 +91,6 @@ async function loadSubjects() {
   if (!tbody) return;
 
   tbody.innerHTML = "";
-
   const semester = $("semester").value;
   const data = await loadSheetOnce();
 
@@ -164,16 +157,14 @@ function calculateSGPA() {
     : "0.00";
 
   $("results").textContent = "SGPA: " + sgpa;
-
   saveSGPA(sgpa, $("semester").value);
 }
 
 /* ================= SAVE SGPA ================= */
 function saveSGPA(sgpa, semester) {
   const record = { semester, sgpa, time: Date.now() };
-  const loggedIn = localStorage.getItem("isLoggedIn") === "true";
 
-  if (loggedIn) {
+  if (localStorage.getItem("isLoggedIn") === "true") {
     const arr = JSON.parse(localStorage.getItem("sgpaData")) || [];
     arr.push(record);
     localStorage.setItem("sgpaData", JSON.stringify(arr));
@@ -201,8 +192,13 @@ auth.onAuthStateChanged(user => {
   }
 });
 
-/* ================= INIT ================= */
-profile = loadProfile() || getGuestProfile();
+/* ================= INIT (CRITICAL GUARD) ================= */
+profile = loadProfile();
+
+if (!profile) {
+  // New device / incognito / fresh visit
+  window.location.replace("login.html");
+}
 
 populateSemesterDropdown();
 loadSubjects();

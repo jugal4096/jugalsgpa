@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>GECA CGPA Calculator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Same CSS as SGPA -->
+  <link rel="stylesheet" href="index.css" />
+</head>
+
+<body>
+
+  <!-- 🎥 Background Video -->
+  <video autoplay muted loop playsinline class="bg-video">
+    <source src="Animated_Character_Video_Generation.mp4" type="video/mp4" />
+  </video>
+  <div class="bg-overlay"></div>
+
+  <!-- 🔐 Top-right Auth / Profile -->
+  <div class="auth-corner">
+
+    <!-- Guest -->
+    <div id="authButtons">
+      <button id="loginBtn" class="auth-btn">Login</button>
+      <button id="registerBtn" class="auth-btn accent-btn">Register</button>
+    </div>
+<!-- 🚨 SEMESTER LIMIT POPUP -->
+<div class="popup-overlay hidden" id="limitPopup">
+  <div class="popup-card">
+    <img src="ChatGPT Image Jan 3, 2026, 09_44_42 AM.gif" class="popup-mascot" alt="Mascot" />
+    <h3>Hey dude 😅</h3>
+    <p>Does 5th year exist too?<br/>B.Tech ends at <b>8 semesters</b> only!</p>
+    <button id="closePopup">Got it 👍</button>
+  </div>
+</div>
+
+    <!-- Logged-in -->
+    <div class="profile-badge hidden" id="profileBadge">
+      <span id="profileInitial">U</span>
+    </div>
+
+  </div>
+
+  <!-- Profile Panel -->
+  <div class="profile-panel hidden" id="profilePanel">
+    <button id="editProfileBtn">✏️ Edit Profile</button>
+    <button id="logoutBtn" class="danger">🚪 Logout</button>
+  </div>
+
+  <!-- ================= MAIN CONTENT ================= -->
+  <div class="container">
+
+    <h2>GECA CGPA Calculator</h2>
+
+    <table id="cgpa-table">
+      <thead>
+        <tr>
+          <th>Semester</th>
+          <th>Credits</th>
+          <th>SGPA</th>
+          <th>❌</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <button id="add-sem">➕ Add Semester</button>
+
+    <div id="cgpa-result">CGPA: 0.00</div>
+
+    <div class="nav-group">
+      <a href="index.html" class="nav-btn secondary">⬅ Go to SGPA</a>
+      <a href="dashboard.html" class="nav-btn">🏠 Home</a>
+    </div>
+
+  </div>
+
+  <!-- Firebase + CGPA logic -->
+  <script type="module" src="cgpa.js"></script>
+</body>
+</html>

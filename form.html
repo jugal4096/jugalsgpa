@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Complete Your Profile</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="stylesheet" href="onboarding.css" />
+</head>
+<body>
+
+  <!-- 🎥 Background Video -->
+  <video autoplay muted loop playsinline class="bg-video">
+    <source src="Cartoon_Christmas_Garden_Animation.mp4" type="video/mp4" />
+  </video>
+
+  <div class="gradient-overlay"></div>
+
+  <!-- 🔐 Top-right Auth / User Badge -->
+  <div class="auth-corner">
+
+    <!-- Login/Register (guest only) -->
+    <div id="authButtons">
+      <button id="loginBtn" class="auth-btn">Login</button>
+      <button id="registerBtn" class="auth-btn accent-btn">Register</button>
+    </div>
+
+    <!-- User badge (logged-in only) -->
+    <div id="userBadge" class="user-badge hidden">
+      <span id="userInitial">U</span>
+
+      <!-- Dropdown -->
+      <div class="badge-menu">
+        <button id="changeProgramBtn">🔁 Change Program</button>
+        <button id="logoutBtn">🚪 Logout</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+    <h1 class="title">Welcome to GECA SGPA</h1>
+    <p class="subtitle">Let’s set up your academic profile</p>
+
+    <form id="profileForm" class="form">
+
+      <select id="admissionMode" required>
+        <option value="">Admission mode</option>
+        <option value="Regular">Regular</option>
+        <option value="Direct Second Year">Direct Second Year</option>
+        <option value="Direct Third Year">Direct Third Year</option>
+      </select>
+
+      <select id="branch" required>
+        <option value="">Select your branch</option>
+        <option value="CIVIL">Civil Engineering</option>
+        <option value="MECH">Mechanical Engineering</option>
+        <option value="ELECT">Electrical Engineering</option>
+        <option value="CSE">Computer Science</option>
+        <option value="ENTC">Electronics & Telecom</option>
+        <option value="IT">Information Technology</option>
+      </select>
+
+      <select id="scheme" required>
+        <option value="">Select scheme</option>
+        <option value="NEP">NEP</option>
+        <option value="NEW CBCS">New CBCS</option>
+        <option value="OLD CBCS">Old CBCS</option>
+      </select>
+
+      <button type="submit">Continue</button>
+    </form>
+  </div>
+
+  <script type="module" src="onboarding.js"></script>
+</body>
+</html>

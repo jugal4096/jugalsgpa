@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>GECA Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="stylesheet" href="dashboard.css" />
+  <script type="module" src="dashboard.js" defer></script>
+</head>
+
+<body>
+
+  <!-- 🎥 Background Video -->
+  <video autoplay muted loop playsinline class="bg-video">
+    <source src="Adding_Moustache_and_Beard.mp4" type="video/mp4" />
+  </video>
+  <div class="bg-overlay"></div>
+
+  <!-- 🔐 AUTH CORNER -->
+  <div class="auth-corner">
+
+    <!-- Guest -->
+    <div id="authButtons">
+      <button class="auth-btn" id="loginBtn">Login</button>
+      <button class="auth-btn accent-btn" id="registerBtn">Register</button>
+    </div>
+
+    <!-- Logged in -->
+    <div class="profile-badge hidden" id="profileBadge">
+      <span id="profileInitial">U</span>
+    </div>
+
+  </div>
+
+  <!-- 👤 PROFILE PANEL -->
+  <div class="profile-panel hidden" id="profilePanel">
+    <button id="changeProgramBtn">🔁 Change Course</button>
+    <button id="editProfileBtn">✏️ Edit Profile</button>
+    <button id="logoutBtn" class="danger">🚪 Logout</button>
+  </div>
+
+  <!-- ================= DASHBOARD ================= -->
+  <main class="container">
+    <h2>GECA Student Dashboard</h2>
+
+    <div class="dashboard-grid">
+
+      <!-- ✅ SGPA (IMPORTANT FIX) -->
+      <a
+        href="index.html"
+        class="dashboard-card"
+        id="sgpaBtn"
+        data-sgpa
+      >
+        📘 SGPA Calculator
+      </a>
+
+      <a href="cgpa.html" class="dashboard-card">
+        📊 CGPA Calculator
+      </a>
+
+      <div class="dashboard-card" id="aiChatBtn">
+        🤖 AI Chatbot
+      </div>
+
+      <div class="dashboard-card" id="groupChatBtn">
+        💬 Group Chat
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ================= LOGIN POPUP ================= -->
+  <div class="popup-overlay hidden" id="loginPopup">
+    <div class="popup-card">
+      <img src="ChatGPT Image Jan 3, 2026, 09_44_42 AM.gif" class="popup-mascot" />
+      <h3>Login required 🤖</h3>
+      <p>AI Assistant is available for logged-in users only.</p>
+      <button id="popupLoginBtn">Continue with Google</button>
+    </div>
+  </div>
+
+  <!-- ================= COMING SOON ================= -->
+  <div class="popup-overlay hidden" id="comingSoonPopup">
+    <div class="popup-card">
+      <img src="ChatGPT Image Jan 3, 2026, 09_44_42 AM.gif" class="popup-mascot" />
+      <h3>Coming Soon 😄</h3>
+      <p>This feature is under development.</p>
+      <button id="closeComingSoon">Got it 👍</button>
+    </div>
+  </div>
+
+</body>
+</html>

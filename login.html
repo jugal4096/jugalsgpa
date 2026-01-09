@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>GECA Academic Planner</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- 🎥 Background Video -->
+  <video autoplay muted loop playsinline class="bg-video">
+    <source src="Video_Converted_to_Cartoon_Animation.mp4" type="video/mp4">
+  </video>
+
+  <!-- 🌫 Overlay -->
+  <div class="overlay">
+
+    <!-- 🔐 Top-right Login / Register -->
+    <div class="auth-corner">
+      <button class="auth-btn" id="loginBtn">Login</button>
+      <button class="auth-btn accent-btn" id="registerBtn">Register</button>
+    </div>
+
+    <!-- 🌟 Center Content -->
+    <div class="center">
+      <h1>
+        Plan your <span class="accent">SGPA</span><br>
+        <span class="muted">Build your</span> <span class="accent2">CGPA</span>
+      </h1>
+
+      <p class="subtitle">
+        A smart, branch-specific academic planner<br>
+        built <b>exclusively for GECA students</b>
+      </p>
+
+      <button class="cta" id="startBtn">🚀 Get Started</button>
+
+      <small class="footer-text">
+        No compulsory login • Free forever • Student-friendly 🎓
+      </small>
+    </div>
+  </div>
+
+  <!-- 🌈 LOGIN SUGGESTION POPUP -->
+  <div class="popup-overlay" id="loginPopup">
+    <div class="popup-wrapper">
+
+      <!-- 🧸 Mascot OUTSIDE the box -->
+      <img src="ChatGPT Image Jan 3, 2026, 09_44_42 AM.gif" class="popup-mascot" alt="Mascot">
+
+      <!-- 🎨 Popup Box -->
+      <div class="popup">
+        <h3>Kindly login to enjoy more features ✨</h3>
+
+        <p>
+          Save your profile, unlock AI guidance,<br>
+          and plan your CGPA smarter — stress-free 🎓
+        </p>
+
+        <div class="popup-actions">
+          <button class="popup-login" id="popupLogin">🔐 Login</button>
+          <button class="popup-later" id="popupLater">Maybe later 🙂</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Logic -->
+  <script type="module" src="login.js"></script>
+
+</body>
+</html>

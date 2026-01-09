@@ -1,0 +1,444 @@
+/* ================= GOOGLE FONTS ================= */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500&display=swap');
+
+/* ================= RESET ================= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* ================= BODY ================= */
+body {
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+  color: #020617;
+  overflow-x: hidden;
+  background: #000;
+}
+
+/* ================= BACKGROUND VIDEO ================= */
+.bg-video {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -3;
+  pointer-events: none;
+}
+
+/* ================= OVERLAY ================= */
+.bg-overlay {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.18),
+    rgba(255, 255, 255, 0.06)
+  );
+  z-index: -2;
+  pointer-events: none;
+}
+
+/* ================= AUTH CORNER ================= */
+.auth-corner {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  display: flex;
+  gap: 12px;
+  z-index: 9999;
+}
+
+/* Login / Register buttons */
+.auth-btn {
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid rgba(255,255,255,0.35);
+  background: rgba(255,255,255,0.25);
+  color: #020617;
+  backdrop-filter: blur(10px);
+  transition: all 0.25s ease;
+}
+
+.auth-btn:hover {
+  transform: translateY(-2px);
+  background: rgba(255,255,255,0.4);
+}
+
+.accent-btn {
+  background: linear-gradient(135deg, #6366f1, #22d3ee);
+  border: none;
+  color: #ffffff;
+  box-shadow: 0 10px 24px rgba(99,102,241,0.45);
+}
+
+.accent-btn:hover {
+  box-shadow: 0 18px 36px rgba(34,211,238,0.6);
+}
+
+/* ================= PROFILE BADGE ================= */
+.profile-badge {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1, #22d3ee);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.profile-badge:hover {
+  transform: scale(1.08);
+  box-shadow: 0 12px 28px rgba(99,102,241,0.55);
+}
+
+.hidden {
+  display: none;
+}
+
+/* ================= PROFILE PANEL ================= */
+.profile-panel {
+  position: fixed;
+  top: 76px;
+  right: 18px;
+  width: 220px;
+  background: rgba(255,255,255,0.95);
+  border-radius: 18px;
+  padding: 14px;
+  box-shadow: 0 25px 40px rgba(0, 0, 0, 0.4);
+  z-index: 9999;
+}
+
+.profile-panel button {
+  width: 100%;
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: #f1f5f9;
+  transition: background 0.2s ease;
+}
+
+.profile-panel button:hover {
+  background: #e0f2fe;
+}
+
+.profile-panel .danger {
+  background: #ef4444;
+  color: #ffffff;
+}
+
+.profile-panel .danger:hover {
+  background: #dc2626;
+}
+
+/* ================= MAIN CONTAINER ================= */
+.container {
+  position: relative;
+  z-index: 10;
+  width: 92%;
+  max-width: 760px;
+  margin: 90px auto 40px;
+  padding: 30px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  border-radius: 26px;
+  box-shadow: 0 25px 45px rgba(0, 0, 0, 0.35);
+}
+
+/* ================= HEADING ================= */
+h2 {
+  font-family: 'Poppins', sans-serif;
+  text-align: center;
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 24px;
+  background: linear-gradient(135deg, #6366f1, #22d3ee);
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+/* ================= LABEL ================= */
+label {
+  display: block;
+  margin-top: 14px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+/* ================= INPUT & SELECT ================= */
+select,
+input {
+  width: 100%;
+  margin-top: 6px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  font-size: 0.85rem;
+  color: #020617;
+  transition: all 0.25s ease;
+}
+
+select:focus,
+input:focus {
+  outline: none;
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 3px rgba(56,189,248,0.35);
+}
+
+/* ================= TABLE ================= */
+table {
+  width: 100%;
+  margin-top: 18px;
+  border-collapse: collapse;
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+thead th {
+  background: linear-gradient(135deg, #6366f1, #22d3ee);
+  color: #ffffff;
+  padding: 12px;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+tbody td {
+  padding: 12px;
+  text-align: center;
+  font-size: 0.82rem;
+  background: #f8fafc;
+}
+
+tbody tr:nth-child(even) td {
+  background: #f1f5f9;
+}
+
+tbody tr:hover td {
+  background: #e0f2fe;
+}
+
+/* ================= ADD SUBJECT ================= */
+#add-subject {
+  margin-top: 16px;
+  width: 100%;
+  background: linear-gradient(135deg, #6366f1, #22d3ee);
+  color: #ffffff;
+  border: none;
+  border-radius: 14px;
+  padding: 10px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+#add-subject:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(99,102,241,0.45);
+}
+
+/* ================= DELETE BUTTON ================= */
+.drop-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff416c, #ff4b2b);
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.drop-btn:hover {
+  transform: scale(1.15);
+  box-shadow: 0 10px 22px rgba(255, 75, 43, 0.45);
+}
+
+/* ================= RESULT ================= */
+#results {
+  margin-top: 20px;
+  padding: 14px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  text-align: center;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #ecfeff, #e0f2fe);
+  color: #0369a1;
+}
+
+/* ================= NAV BUTTON ================= */
+.nav-btn {
+  display: block;
+  margin: 22px auto 0;
+  padding: 12px 20px;
+  border-radius: 18px;
+  text-align: center;
+  text-decoration: none;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  background: linear-gradient(135deg, #facc15, #fb7185);
+  color: #020617;
+  transition: 0.25s ease;
+}
+
+.nav-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 30px rgba(250, 204, 21, 0.45);
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 600px) {
+  .container {
+    margin-top: 70px;
+    padding: 22px;
+  }
+
+  h2 {
+    font-size: 1.4rem;
+  }
+
+  thead th,
+  tbody td {
+    font-size: 0.72rem;
+  }
+}
+/* ================= CGPA SEMESTER LIMIT POPUP ================= */
+
+.popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+  animation: fadeIn 0.25s ease;
+}
+
+.popup-overlay.hidden {
+  display: none;
+}
+
+/* ================= POPUP CARD ================= */
+.popup-card {
+  position: relative;
+  width: 92%;
+  max-width: 360px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.95),
+    rgba(240, 249, 255, 0.95)
+  );
+  border-radius: 22px;
+  padding: 26px 22px 24px;
+  text-align: center;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+  animation: popScale 0.35s ease;
+}
+
+/* ================= POPUP TEXT ================= */
+.popup-card h3 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.35rem;
+  margin-bottom: 10px;
+  background: linear-gradient(135deg, #6366f1, #22d3ee);
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.popup-card p {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #334155;
+  margin-bottom: 20px;
+}
+
+/* ================= POPUP BUTTON ================= */
+.popup-card button {
+  padding: 10px 22px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: linear-gradient(135deg, #6366f1, #22d3ee);
+  color: #ffffff;
+  transition: all 0.25s ease;
+}
+
+.popup-card button:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 14px 30px rgba(99, 102, 241, 0.45);
+}
+
+/* ================= FLOATING MASCOT ================= */
+.popup-mascot {
+  position: absolute;
+  top: -48px;
+  right: -38px;
+  width: 110px;
+  height: auto;
+  pointer-events: none;
+  animation: mascotFloat 3s ease-in-out infinite;
+  filter: drop-shadow(0 12px 30px rgba(0, 0, 0, 0.35));
+}
+
+/* ================= ANIMATIONS ================= */
+@keyframes popScale {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes mascotFloat {
+  0% {
+    transform: translateY(0) rotate(-2deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(2deg);
+  }
+  100% {
+    transform: translateY(0) rotate(-2deg);
+  }
+}
+
+/* ================= MOBILE TWEAK ================= */
+@media (max-width: 480px) {
+  .popup-mascot {
+    width: 90px;
+    top: -42px;
+    right: -30px;
+  }
+}
+

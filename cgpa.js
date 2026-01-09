@@ -110,7 +110,7 @@ function showLimitPopup() {
 
   if (program === "MCA" || program === "MTECH") {
     msg.textContent =
-      "Hey dude 😄 Does 3rd year exist too? MCA / M.Tech ends at 4th semester only.";
+      "Hey dude 😄 Does 3rd year exist too? MCA ends at 4th semester only.";
   } else {
     msg.textContent =
       "You have already added all available semesters.";

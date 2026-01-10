@@ -30,7 +30,7 @@ const closeComingSoonBtn = $("closeComingSoon");
 const aiChatBtn = $("aiChatBtn");
 const groupChatBtn = $("groupChatBtn");
 
-/* 🔹 SGPA button (anchor or div) */
+/* 🔹 SGPA button */
 const sgpaBtn = $("sgpaBtn");
 
 /* ================= INITIAL STATE ================= */
@@ -62,7 +62,7 @@ async function googleLogin() {
     await signInWithPopup(auth, provider);
     loginPopup?.classList.add("hidden");
   } catch (err) {
-    console.error("Google sign-in failed", err);
+    console.warn("Login cancelled");
   }
 }
 
@@ -89,7 +89,6 @@ changeProgramBtn.onclick = () => {
   sessionStorage.removeItem("program");
 
   sessionStorage.setItem("redirectAfterProgramChange", "true");
-
   location.replace("select.html");
 };
 
@@ -105,15 +104,19 @@ logoutBtn.onclick = async () => {
   location.replace("login.html");
 };
 
-/* ================= AI / GROUP CHAT ================= */
+/* =================================================
+   🤖 AI CHATBOT (GUEST FRIENDLY POPUP)
+   ================================================= */
 aiChatBtn.onclick = () => {
   if (auth.currentUser) {
     location.href = "ai.html";
   } else {
-    googleLogin();
+    // show polite login popup instead of forcing login
+    loginPopup.classList.remove("hidden");
   }
 };
 
+/* ================= GROUP CHAT ================= */
 groupChatBtn.onclick = () =>
   comingSoonPopup.classList.remove("hidden");
 
@@ -122,7 +125,7 @@ closeComingSoonBtn &&
     comingSoonPopup.classList.add("hidden"));
 
 /* =================================================
-   🎯 SGPA ROUTING BASED ON COURSE (FINAL FIX)
+   🎯 SGPA ROUTING BASED ON COURSE
    ================================================= */
 if (sgpaBtn) {
   sgpaBtn.addEventListener("click", e => {
@@ -132,8 +135,6 @@ if (sgpaBtn) {
       localStorage.getItem("program") ||
       sessionStorage.getItem("program");
 
-    console.log("SGPA clicked → program:", program);
-
     if (program === "MCA") {
       window.location.href = "mca.html";
     } else {
@@ -141,4 +142,3 @@ if (sgpaBtn) {
     }
   });
 }
-

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- PapaParse -->
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
+  <meta charset="UTF-8" />
+  <title>GECA SGPA Calculator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="stylesheet" href="index.css" />
+</head>
+
+<body>
+
+  <!-- 🎥 Background Video -->
+  <video autoplay muted loop playsinline class="bg-video">
+    <source src="Animated_Character_Video_Generation.mp4" type="video/mp4" />
+  </video>
+  <div class="bg-overlay"></div>
+
+  <!-- 🔐 Top-right Auth / Profile -->
+  <div class="auth-corner">
+
+    <!-- Guest -->
+    <div id="authButtons">
+      <button id="loginBtn" class="auth-btn">Login</button>
+      <button id="registerBtn" class="auth-btn accent-btn">Register</button>
+    </div>
+
+    <!-- Logged-in -->
+    <div class="profile-badge hidden" id="profileBadge">
+      <span id="profileInitial">U</span>
+    </div>
+
+  </div>
+
+  <!-- Profile Panel -->
+  <div class="profile-panel hidden" id="profilePanel">
+    <button id="editProfileBtn">✏️ Edit Profile</button>
+    <button id="logoutBtn">🚪 Logout</button>
+  </div>
+
+  <div class="container">
+    <h2>GECA SGPA Calculator</h2>
+
+    <label>Semester</label>
+    <select id="semester"></select>
+
+    <table id="subjects">
+      <thead>
+        <tr>
+          <th>Subject</th>
+          <th>Credits</th>
+          <th>Grade</th>
+          <th>❌</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <button id="add-subject">➕ Add Subject</button>
+
+    <div id="results">SGPA: 0.00</div>
+
+    <!-- 🔗 Navigation -->
+    <div class="nav-group">
+      <a href="dashboard.html" class="nav-btn secondary">🏠 Go to Home</a>
+      <a href="cgpa.html" class="nav-btn">➡ Go to CGPA Calculator</a>
+    </div>
+  </div>
+
+  <script type="module" src="jugal.js"></script>
+</body>
+</html>

@@ -71,15 +71,30 @@
     </div>
   </main>
 
-  <!-- ================= LOGIN POPUP ================= -->
-  <div class="popup-overlay hidden" id="loginPopup">
-    <div class="popup-card">
-      <img src="ChatGPT Image Jan 3, 2026, 09_44_42 AM.gif" class="popup-mascot" />
-      <h3>Login required 🤖</h3>
-      <p>AI Assistant is available for logged-in users only.</p>
-      <button id="popupLoginBtn">Continue with Google</button>
-    </div>
+ <!-- ================= LOGIN POPUP ================= -->
+<div class="popup-overlay hidden" id="loginPopup">
+  <div class="popup-card">
+    <img src="ChatGPT Image Jan 3, 2026, 09_44_42 AM.gif"
+         class="popup-mascot" alt="Mascot" />
+
+    <h3>Login required 🤖</h3>
+    <p>Kindly login to enjoy AI chatbot feature</p>
+
+    <button id="popupLoginBtn">Continue with Google</button>
+
+    <!-- 👇 NEW BUTTON -->
+    <button id="popupLaterBtn"
+      style="
+        margin-top:12px;
+        background:transparent;
+        color:#cfd8dc;
+        box-shadow:none;
+      ">
+      Not for now
+    </button>
   </div>
+</div>
+
 
   <!-- ================= COMING SOON ================= -->
   <div class="popup-overlay hidden" id="comingSoonPopup">
@@ -93,4 +108,5 @@
 
 </body>
 </html>
+
 

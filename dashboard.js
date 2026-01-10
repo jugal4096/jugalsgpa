@@ -5,6 +5,7 @@ import {
   signOut
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
+/* ================= HELPERS ================= */
 const $ = id => document.getElementById(id);
 const provider = new GoogleAuthProvider();
 
@@ -14,29 +15,27 @@ const profileBadge = $("profileBadge");
 const profileInitial = $("profileInitial");
 const profilePanel = $("profilePanel");
 
-const changeProgramBtn = $("changeProgramBtn");
-const editProfileBtn = $("editProfileBtn");
-const logoutBtn = $("logoutBtn");
-
 const loginBtn = $("loginBtn");
 const registerBtn = $("registerBtn");
 
 const loginPopup = $("loginPopup");
 const popupLoginBtn = $("popupLoginBtn");
-
-const comingSoonPopup = $("comingSoonPopup");
-const closeComingSoonBtn = $("closeComingSoon");
+const popupLaterBtn = $("popupLaterBtn");
 
 const aiChatBtn = $("aiChatBtn");
 const groupChatBtn = $("groupChatBtn");
 
-/* 🔹 SGPA button */
-const sgpaBtn = $("sgpaBtn");
+const comingSoonPopup = $("comingSoonPopup");
+const closeComingSoonBtn = $("closeComingSoon");
+
+const changeProgramBtn = $("changeProgramBtn");
+const editProfileBtn = $("editProfileBtn");
+const logoutBtn = $("logoutBtn");
 
 /* ================= INITIAL STATE ================= */
-profilePanel?.classList.add("hidden");
-loginPopup?.classList.add("hidden");
-comingSoonPopup?.classList.add("hidden");
+profilePanel.classList.add("hidden");
+loginPopup.classList.add("hidden");
+comingSoonPopup.classList.add("hidden");
 
 /* ================= AUTH STATE ================= */
 auth.onAuthStateChanged(user => {
@@ -44,7 +43,7 @@ auth.onAuthStateChanged(user => {
     authButtons.style.display = "none";
     profileBadge.classList.remove("hidden");
     profileInitial.textContent =
-      user.displayName?.[0]?.toUpperCase() || "U";
+      user.displayName?.charAt(0).toUpperCase() || "U";
 
     localStorage.setItem("isLoggedIn", "true");
   } else {
@@ -56,20 +55,25 @@ auth.onAuthStateChanged(user => {
   }
 });
 
-/* ================= GOOGLE SIGN-IN ================= */
+/* ================= GOOGLE LOGIN ================= */
 async function googleLogin() {
   try {
     await signInWithPopup(auth, provider);
-    loginPopup?.classList.add("hidden");
+    loginPopup.classList.add("hidden");
   } catch (err) {
     console.warn("Login cancelled");
   }
 }
 
-/* 🔐 Login / Register → Google popup */
+/* ================= LOGIN / REGISTER ================= */
 loginBtn.onclick = googleLogin;
 registerBtn.onclick = googleLogin;
-popupLoginBtn && (popupLoginBtn.onclick = googleLogin);
+popupLoginBtn.onclick = googleLogin;
+
+/* ❌ Not for now → just close popup */
+popupLaterBtn.onclick = () => {
+  loginPopup.classList.add("hidden");
+};
 
 /* ================= PROFILE PANEL ================= */
 profileBadge.onclick = e => {
@@ -81,22 +85,17 @@ document.addEventListener("click", () =>
   profilePanel.classList.add("hidden")
 );
 
-/* ================= CHANGE COURSE ================= */
+/* ================= PROFILE ACTIONS ================= */
 changeProgramBtn.onclick = () => {
   profilePanel.classList.add("hidden");
-
   localStorage.removeItem("program");
   sessionStorage.removeItem("program");
-
-  sessionStorage.setItem("redirectAfterProgramChange", "true");
   location.replace("select.html");
 };
 
-/* ================= EDIT PROFILE ================= */
 editProfileBtn.onclick = () =>
   location.href = "form.html";
 
-/* ================= LOGOUT ================= */
 logoutBtn.onclick = async () => {
   try { await signOut(auth); } catch {}
   localStorage.clear();
@@ -104,14 +103,11 @@ logoutBtn.onclick = async () => {
   location.replace("login.html");
 };
 
-/* =================================================
-   🤖 AI CHATBOT (GUEST FRIENDLY POPUP)
-   ================================================= */
+/* ================= AI CHATBOT ================= */
 aiChatBtn.onclick = () => {
   if (auth.currentUser) {
     location.href = "ai.html";
   } else {
-    // show polite login popup instead of forcing login
     loginPopup.classList.remove("hidden");
   }
 };
@@ -120,25 +116,5 @@ aiChatBtn.onclick = () => {
 groupChatBtn.onclick = () =>
   comingSoonPopup.classList.remove("hidden");
 
-closeComingSoonBtn &&
-  (closeComingSoonBtn.onclick = () =>
-    comingSoonPopup.classList.add("hidden"));
-
-/* =================================================
-   🎯 SGPA ROUTING BASED ON COURSE
-   ================================================= */
-if (sgpaBtn) {
-  sgpaBtn.addEventListener("click", e => {
-    e.preventDefault();
-
-    const program =
-      localStorage.getItem("program") ||
-      sessionStorage.getItem("program");
-
-    if (program === "MCA") {
-      window.location.href = "mca.html";
-    } else {
-      window.location.href = "sgpa.html";
-    }
-  });
-}
+closeComingSoonBtn.onclick = () =>
+  comingSoonPopup.classList.add("hidden");

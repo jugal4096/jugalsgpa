@@ -30,28 +30,35 @@ const provider = new GoogleAuthProvider();
 
 auth.onAuthStateChanged(user => {
   if (user) {
-    $("authButtons").style.display = "none";
-    $("profileBadge").classList.remove("hidden");
-    $("profileInitial").textContent =
-      user.displayName?.charAt(0).toUpperCase() || "U";
+    $("authButtons")?.style && ($("authButtons").style.display = "none");
+    $("profileBadge")?.classList.remove("hidden");
+    $("profileInitial") &&
+      ($("profileInitial").textContent =
+        user.displayName?.charAt(0).toUpperCase() || "U");
   } else {
-    $("authButtons").style.display = "flex";
-    $("profileBadge").classList.add("hidden");
+    $("authButtons")?.style && ($("authButtons").style.display = "flex");
+    $("profileBadge")?.classList.add("hidden");
   }
 });
 
-$("loginBtn").onclick = () => signInWithPopup(auth, provider);
-$("registerBtn").onclick = () => signInWithPopup(auth, provider);
+/* 🔐 Login / Register → Google popup */
+$("loginBtn") && ($("loginBtn").onclick = () => signInWithPopup(auth, provider));
+$("registerBtn") &&
+  ($("registerBtn").onclick = () => signInWithPopup(auth, provider));
 
-$("logoutBtn").onclick = async () => {
-  await signOut(auth);
-  localStorage.clear();
-  sessionStorage.clear();
-  window.location.replace("login.html");
-};
+/* 🚪 Logout */
+$("logoutBtn") &&
+  ($("logoutBtn").onclick = async () => {
+    await signOut(auth);
+    localStorage.clear();
+    sessionStorage.clear();
+    window.location.replace("login.html");
+  });
 
-$("editProfileBtn").onclick = () =>
-  window.location.href = "form.html";
+/* ✏️ Edit profile */
+$("editProfileBtn") &&
+  ($("editProfileBtn").onclick = () =>
+    window.location.href = "form.html");
 
 /* ================= SEMESTER RANGE ================= */
 function getSemesterRange() {
@@ -61,7 +68,7 @@ function getSemesterRange() {
     return { start: 1, end: 4 };
   }
 
-  // B.Tech logic (unchanged)
+  // B.Tech logic
   if (profile.admissionMode === "Direct Second Year")
     return { start: 3, end: 8 };
 
@@ -103,9 +110,11 @@ function addSemesterRow(sem) {
   tbody.appendChild(tr);
 }
 
-/* ================= POPUP ================= */
+/* ================= LIMIT POPUP ================= */
 function showLimitPopup() {
   const popup = $("limitPopup");
+  if (!popup) return;
+
   const msg = popup.querySelector("p");
 
   if (program === "MCA" || program === "MTECH") {
@@ -119,20 +128,22 @@ function showLimitPopup() {
   popup.classList.remove("hidden");
 }
 
-$("closePopup").onclick = () =>
-  $("limitPopup").classList.add("hidden");
+$("closePopup") &&
+  ($("closePopup").onclick = () =>
+    $("limitPopup").classList.add("hidden"));
 
 /* ================= ADD SEM BUTTON ================= */
-$("add-sem").addEventListener("click", () => {
-  const nextSem = getNextSemester();
+$("add-sem") &&
+  $("add-sem").addEventListener("click", () => {
+    const nextSem = getNextSemester();
 
-  if (!nextSem) {
-    showLimitPopup();
-    return;
-  }
+    if (!nextSem) {
+      showLimitPopup();
+      return;
+    }
 
-  addSemesterRow(nextSem);
-});
+    addSemesterRow(nextSem);
+  });
 
 /* ================= CGPA CALC ================= */
 function calculateCGPA() {
@@ -167,6 +178,23 @@ tbody.addEventListener("click", e => {
     calculateCGPA();
   }
 });
+
+/* =================================================
+   🎯 SGPA ROUTING (FINAL REQUIREMENT)
+   ================================================= */
+const sgpaBtn = $("sgpaBtn");
+
+if (sgpaBtn) {
+  sgpaBtn.addEventListener("click", e => {
+    e.preventDefault();
+
+    if (program === "MCA") {
+      window.location.href = "mca.html";
+    } else {
+      window.location.href = "sgpa.html";
+    }
+  });
+}
 
 /* ================= INIT ================= */
 addSemesterRow(start);

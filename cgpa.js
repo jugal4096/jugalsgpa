@@ -17,26 +17,12 @@ const program =
   "BTECH";
 
 /* ================= PROFILE ================= */
-function loadProfile() {
-  return (
-    JSON.parse(localStorage.getItem("profile")) ||
-    JSON.parse(sessionStorage.getItem("profile"))
-  );
-}
-
-const profile = loadProfile() || { admissionMode: "Regular" };
+const profile =
+  JSON.parse(localStorage.getItem("profile")) ||
+  JSON.parse(sessionStorage.getItem("profile")) ||
+  { admissionMode: "Regular" };
 
 /* ================= AUTH UI ================= */
-const authButtons = $("authButtons");
-const profileBadge = $("profileBadge");
-const profileInitial = $("profileInitial");
-const profilePanel = $("profilePanel");
-
-const loginBtn = $("loginBtn");
-const registerBtn = $("registerBtn");
-const logoutBtn = $("logoutBtn");
-const editProfileBtn = $("editProfileBtn");
-
 auth.onAuthStateChanged(user => {
   if (!authButtons || !profileBadge) return;
 
@@ -44,7 +30,7 @@ auth.onAuthStateChanged(user => {
     authButtons.style.display = "none";
     profileBadge.classList.remove("hidden");
     profileInitial.textContent =
-      user.displayName?.charAt(0).toUpperCase() || "U";
+      user.displayName?.[0]?.toUpperCase() || "U";
   } else {
     authButtons.style.display = "flex";
     profileBadge.classList.add("hidden");
@@ -52,39 +38,37 @@ auth.onAuthStateChanged(user => {
   }
 });
 
-/* ================= GOOGLE LOGIN ================= */
-async function googleLogin() {
-  try {
-    await signInWithPopup(auth, provider);
-  } catch {
-    console.warn("Login cancelled");
-  }
-}
+const authButtons = $("authButtons");
+const profileBadge = $("profileBadge");
+const profileInitial = $("profileInitial");
+const profilePanel = $("profilePanel");
 
-loginBtn && (loginBtn.onclick = googleLogin);
-registerBtn && (registerBtn.onclick = googleLogin);
+$("loginBtn")?.addEventListener("click", () =>
+  signInWithPopup(auth, provider)
+);
 
-logoutBtn &&
-  (logoutBtn.onclick = async () => {
-    try { await signOut(auth); } catch {}
-    localStorage.clear();
-    sessionStorage.clear();
-    location.replace("login.html");
-  });
+$("registerBtn")?.addEventListener("click", () =>
+  signInWithPopup(auth, provider)
+);
 
-editProfileBtn &&
-  (editProfileBtn.onclick = () =>
-    location.href = "form.html");
+$("logoutBtn")?.addEventListener("click", async () => {
+  try { await signOut(auth); } catch {}
+  localStorage.clear();
+  sessionStorage.clear();
+  location.replace("login.html");
+});
 
-/* ================= PROFILE PANEL ================= */
-profileBadge &&
-  (profileBadge.onclick = e => {
-    e.stopPropagation();
-    profilePanel.classList.toggle("hidden");
-  });
+$("editProfileBtn")?.addEventListener("click", () =>
+  location.href = "form.html"
+);
+
+profileBadge?.addEventListener("click", e => {
+  e.stopPropagation();
+  profilePanel.classList.toggle("hidden");
+});
 
 document.addEventListener("click", () =>
-  profilePanel.classList.add("hidden")
+  profilePanel?.classList.add("hidden")
 );
 
 /* ================= SEMESTER RANGE ================= */
@@ -126,8 +110,8 @@ function addSemesterRow(sem) {
 
   tr.innerHTML = `
     <td>Semester ${sem}</td>
-    <td><input type="number" min="1" placeholder="Credits"></td>
-    <td><input type="number" min="0" max="10" step="0.01" placeholder="SGPA"></td>
+    <td><input type="number" min="1" /></td>
+    <td><input type="number" min="0" max="10" step="0.01" /></td>
     <td><button class="drop-btn">✖</button></td>
   `;
 
@@ -139,24 +123,22 @@ const limitPopup = $("limitPopup");
 const closePopup = $("closePopup");
 
 function showLimitPopup() {
-  if (!limitPopup) return;
-
   const msg = limitPopup.querySelector("p");
 
   if (program === "MCA" || program === "MTECH") {
     msg.innerHTML =
-      "Hey dude 😄<br/>Does 3rd year exist too?<br/><b>MCA ends at 4th semester only!</b>";
+      "Hey dude 😄<br><b>MCA ends at 4 semesters only!</b>";
   } else {
     msg.innerHTML =
-      "Hey dude 😅<br/>Does 5th year exist too?<br/><b>B.Tech ends at 8 semesters only!</b>";
+      "Hey dude 😅<br><b>B.Tech ends at 8 semesters only!</b>";
   }
 
   limitPopup.classList.remove("hidden");
 }
 
-closePopup &&
-  (closePopup.onclick = () =>
-    limitPopup.classList.add("hidden"));
+closePopup?.addEventListener("click", () =>
+  limitPopup.classList.add("hidden")
+);
 
 /* ================= ADD SEM BUTTON ================= */
 $("add-sem").addEventListener("click", () => {
@@ -176,25 +158,20 @@ function calculateCGPA() {
   let totalPoints = 0;
 
   tbody.querySelectorAll("tr").forEach(row => {
-    const credits =
-      parseFloat(row.children[1].querySelector("input").value);
-    const sgpa =
-      parseFloat(row.children[2].querySelector("input").value);
+    const credits = parseFloat(row.children[1].querySelector("input").value);
+    const sgpa = parseFloat(row.children[2].querySelector("input").value);
 
-    if (!isNaN(credits) && credits > 0 && !isNaN(sgpa)) {
+    if (credits > 0 && sgpa >= 0) {
       totalCredits += credits;
       totalPoints += credits * sgpa;
     }
   });
 
-  const cgpa = totalCredits
-    ? (totalPoints / totalCredits).toFixed(2)
-    : "0.00";
-
-  $("cgpa-result").textContent = `CGPA: ${cgpa}`;
+  $("cgpa-result").textContent =
+    "CGPA: " +
+    (totalCredits ? (totalPoints / totalCredits).toFixed(2) : "0.00");
 }
 
-/* ================= EVENTS ================= */
 tbody.addEventListener("input", calculateCGPA);
 
 tbody.addEventListener("click", e => {
@@ -206,24 +183,14 @@ tbody.addEventListener("click", e => {
 
 /* ================= INIT ================= */
 addSemesterRow(start);
-/* =================================================
-   🔁 GO TO SGPA (PROGRAM-AWARE FIX)
-   ================================================= */
-const goToSgpaBtn = document.getElementById("goToSgpaBtn");
 
-if (goToSgpaBtn) {
-  goToSgpaBtn.addEventListener("click", e => {
-    e.preventDefault();
+/* ================= GO TO SGPA ================= */
+$("goToSgpaBtn").addEventListener("click", e => {
+  e.preventDefault();
 
-    const program =
-      localStorage.getItem("program") ||
-      sessionStorage.getItem("program") ||
-      "BTECH";
-
-    if (program === "MCA") {
-      window.location.href = "mca.html";
-    } else {
-      window.location.href = "sgpa.html";
-    }
-  });
-}
+  if (program === "MCA") {
+    location.href = "mca.html";
+  } else {
+    location.href = "sgpa.html";
+  }
+});

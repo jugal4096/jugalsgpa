@@ -14,12 +14,12 @@ const MCA_SHEET_CSV_URL =
 const $ = id => document.getElementById(id);
 const provider = new GoogleAuthProvider();
 
-/* Normalize CSV headers */
+/* ================= SAFE CSV ACCESS ================= */
 function getValue(row, key) {
-  const foundKey = Object.keys(row).find(
-    k => k.replace(/\s+/g, "").toLowerCase() === key.toLowerCase()
+  const k = Object.keys(row).find(
+    x => x.replace(/\s+/g, "").toLowerCase() === key.toLowerCase()
   );
-  return foundKey ? row[foundKey] : null;
+  return k ? row[k] : null;
 }
 
 /* ================= PROGRAM GUARD ================= */
@@ -28,7 +28,7 @@ const program =
   sessionStorage.getItem("program");
 
 if (program !== "MCA") {
-  window.location.replace("select.html");
+  location.replace("select.html");
 }
 
 /* ================= STATE ================= */
@@ -37,9 +37,9 @@ let sheetCache = null;
 /* ================= SEMESTERS ================= */
 function populateSemesterDropdown() {
   const select = $("semester");
-  select.innerHTML = "";
+  if (!select) return;
 
-  // MCA → Semester 1 to 4
+  select.innerHTML = "";
   for (let i = 1; i <= 4; i++) {
     const opt = document.createElement("option");
     opt.value = i;
@@ -57,8 +57,8 @@ function loadSheetOnce() {
       download: true,
       header: true,
       skipEmptyLines: true,
-      complete: res => {
-        sheetCache = res.data;
+      complete: r => {
+        sheetCache = r.data;
         resolve(sheetCache);
       }
     });
@@ -67,6 +67,9 @@ function loadSheetOnce() {
 
 /* ================= SUBJECT ROW ================= */
 function createRow(subject, credits) {
+  const tbody = $("subjects")?.querySelector("tbody");
+  if (!tbody) return;
+
   const tr = document.createElement("tr");
   tr.innerHTML = `
     <td>${subject}</td>
@@ -85,367 +88,111 @@ function createRow(subject, credits) {
     </td>
     <td><button class="drop-btn">❌</button></td>
   `;
-  $("subjects").querySelector("tbody").appendChild(tr);
+  tbody.appendChild(tr);
 }
 
 /* ================= LOAD SUBJECTS ================= */
 async function loadSubjects() {
-  const tbody = $("subjects").querySelector("tbody");
+  const tbody = $("subjects")?.querySelector("tbody");
+  const semSelect = $("semester");
+  if (!tbody || !semSelect) return;
+
   tbody.innerHTML = "";
 
-  const selectedSemester = String($("semester").value);
+  const semester = String(semSelect.value);
   const data = await loadSheetOnce();
 
   data.forEach(row => {
-    const sem = String(getValue(row, "semester")).trim();
-    const subject = getValue(row, "subject");
-    const credits = Number(getValue(row, "credits"));
-
-    if (sem === selectedSemester && subject && !isNaN(credits)) {
-      createRow(subject, credits);
+    if (
+      String(getValue(row, "semester")).trim() === semester
+    ) {
+      const subject = getValue(row, "subject");
+      const credits = Number(getValue(row, "credits"));
+      if (subject && !isNaN(credits)) {
+        createRow(subject, credits);
+      }
     }
   });
 
   calculateSGPA();
 }
 
-/* ================= MANUAL SUBJECT ================= */
-function addManualSubject() {
-  const tr = document.createElement("tr");
-  tr.innerHTML = `
-    <td><input placeholder="Subject Name"></td>
-    <td><input type="number" min="0"></td>
-    <td>
-      <select>
-        <option value="10">A++</option>
-        <option value="9">A+</option>
-        <option value="8">A</option>
-        <option value="7">B+</option>
-        <option value="6">B</option>
-        <option value="5">C+</option>
-        <option value="4">C</option>
-        <option value="0">D</option>
-      </select>
-    </td>
-    <td><button class="drop-btn">❌</button></td>
-  `;
-  $("subjects").querySelector("tbody").appendChild(tr);
-}
-
 /* ================= SGPA ================= */
 function calculateSGPA() {
-  let totalCredits = 0;
-  let totalPoints = 0;
+  let tc = 0, tp = 0;
 
-  document.querySelectorAll("#subjects tbody tr").forEach(row => {
-    const credits =
-      parseFloat(
-        row.children[1].querySelector("input")?.value ||
-        row.children[1].textContent
-      );
-    const grade = parseFloat(row.querySelector("select")?.value);
+  document.querySelectorAll("#subjects tbody tr").forEach(r => {
+    const c = parseFloat(
+      r.children[1].querySelector("input")?.value ||
+      r.children[1].textContent
+    );
+    const g = parseFloat(r.querySelector("select")?.value);
 
-    if (!isNaN(credits) && credits > 0 && !isNaN(grade)) {
-      totalCredits += credits;
-      totalPoints += credits * grade;
+    if (c > 0 && g >= 0) {
+      tc += c;
+      tp += c * g;
     }
   });
 
-  const sgpa = totalCredits
-    ? (totalPoints / totalCredits).toFixed(2)
-    : "0.00";
-
+  const sgpa = tc ? (tp / tc).toFixed(2) : "0.00";
   $("results").textContent = "SGPA: " + sgpa;
-  saveSGPA(sgpa, $("semester").value);
 }
 
-/* ================= SAVE SGPA ================= */
-function saveSGPA(sgpa, semester) {
-  const record = { semester, sgpa, time: Date.now() };
-  const loggedIn = localStorage.getItem("isLoggedIn") === "true";
-
-  if (loggedIn) {
-    const arr =
-      JSON.parse(localStorage.getItem("mcaSgpaData")) || [];
-    arr.push(record);
-    localStorage.setItem("mcaSgpaData", JSON.stringify(arr));
-  } else {
-    sessionStorage.setItem("mcaLastSGPA", JSON.stringify(record));
-  }
-}
-
-/* ================= AUTH UI ================= */
-const authButtons = $("authButtons");
-const profileBadge = $("profileBadge");
-const profileInitial = $("profileInitial");
-
-/* 🔐 Google popup login */
+/* ================= GOOGLE LOGIN ================= */
 async function googleLogin() {
   try {
     await signInWithPopup(auth, provider);
-  } catch (e) {
+  } catch {
     console.warn("Login cancelled");
   }
 }
 
-auth.onAuthStateChanged(user => {
-  if (user) {
-    authButtons.style.display = "none";
-    profileBadge.classList.remove("hidden");
-    profileInitial.textContent =
-      user.displayName?.charAt(0)?.toUpperCase() || "U";
-    localStorage.setItem("isLoggedIn", "true");
-  } else {
-    authButtons.style.display = "flex";
-    profileBadge.classList.add("hidden");
-    localStorage.setItem("isLoggedIn", "false");
-  }
-});
-
-/* ================= EVENTS ================= */
-$("semester").addEventListener("change", loadSubjects);
-$("add-subject").addEventListener("click", addManualSubject);
-
-$("subjects").addEventListener("change", calculateSGPA);
-$("subjects").addEventListener("click", e => {
-  if (e.target.classList.contains("drop-btn")) {
-    e.target.closest("tr").remove();
-    calculateSGPA();
-  }
-});
-
-/* 🔑 LOGIN / REGISTER → GOOGLE POPUP (FIX) */
-$("loginBtn").onclick = googleLogin;
-$("registerBtn").onclick = googleLogin;
-
-/* ================= PROFILE PANEL ================= */
-profileBadge.addEventListener("click", e => {
-  e.stopPropagation();
-  $("profilePanel").classList.toggle("hidden");
-});
-
-document.addEventListener("click", () =>
-  $("profilePanel").classList.add("hidden")
-);
-
-$("logoutBtn").addEventListener("click", async () => {
-  try { await signOut(auth); } catch {}
-  localStorage.clear();
-  sessionStorage.clear();
-  window.location.replace("login.html");
-});
-
-$("editProfileBtn").onclick = () =>
-  window.location.href = "form.html";
-
-/* ================= INIT ================= */
-populateSemesterDropdown();
-loadSubjects();
-if (program !== "MCA") {
-  window.location.replace("select.html");
-}
-
-/* ================= STATE ================= */
-let sheetCache = null;
-
-/* ================= SEMESTERS ================= */
-function populateSemesterDropdown() {
-  const select = $("semester");
-  select.innerHTML = "";
-
-  // MCA → 1 to 6
-  for (let i = 1; i <= 4; i++) {
-    const opt = document.createElement("option");
-    opt.value = i;
-    opt.textContent = `Semester ${i}`;
-    select.appendChild(opt);
-  }
-}
-
-/* ================= LOAD CSV ================= */
-function loadSheetOnce() {
-  return new Promise(resolve => {
-    if (sheetCache) return resolve(sheetCache);
-
-    Papa.parse(MCA_SHEET_CSV_URL, {
-      download: true,
-      header: true,
-      skipEmptyLines: true,
-      complete: res => {
-        sheetCache = res.data;
-        resolve(sheetCache);
-      }
-    });
-  });
-}
-
-/* ================= SUBJECT ROW ================= */
-function createRow(subject, credits) {
-  const tr = document.createElement("tr");
-  tr.innerHTML = `
-    <td>${subject}</td>
-    <td>${credits}</td>
-    <td>
-      <select>
-        <option value="10">A++</option>
-        <option value="9">A+</option>
-        <option value="8">A</option>
-        <option value="7">B+</option>
-        <option value="6">B</option>
-        <option value="5">C+</option>
-        <option value="4">C</option>
-        <option value="0">D</option>
-      </select>
-    </td>
-    <td><button class="drop-btn">❌</button></td>
-  `;
-  $("subjects").querySelector("tbody").appendChild(tr);
-}
-
-/* ================= LOAD SUBJECTS ================= */
-async function loadSubjects() {
-  const tbody = $("subjects").querySelector("tbody");
-  tbody.innerHTML = "";
-
-  const selectedSemester = String($("semester").value);
-  const data = await loadSheetOnce();
-
-  data.forEach(row => {
-    const sem = String(getValue(row, "semester")).trim();
-    const subject = getValue(row, "subject");
-    const credits = Number(getValue(row, "credits"));
-
-    if (sem === selectedSemester && subject && !isNaN(credits)) {
-      createRow(subject, credits);
-    }
-  });
-
-  calculateSGPA();
-}
-
-/* ================= MANUAL SUBJECT ================= */
-function addManualSubject() {
-  const tr = document.createElement("tr");
-  tr.innerHTML = `
-    <td><input placeholder="Subject Name"></td>
-    <td><input type="number" min="0"></td>
-    <td>
-      <select>
-        <option value="10">A++</option>
-        <option value="9">A+</option>
-        <option value="8">A</option>
-        <option value="7">B+</option>
-        <option value="6">B</option>
-        <option value="5">C+</option>
-        <option value="4">C</option>
-        <option value="0">D</option>
-      </select>
-    </td>
-    <td><button class="drop-btn">❌</button></td>
-  `;
-  $("subjects").querySelector("tbody").appendChild(tr);
-}
-
-/* ================= SGPA ================= */
-function calculateSGPA() {
-  let totalCredits = 0;
-  let totalPoints = 0;
-
-  document.querySelectorAll("#subjects tbody tr").forEach(row => {
-    const credits =
-      parseFloat(
-        row.children[1].querySelector("input")?.value ||
-        row.children[1].textContent
-      );
-
-    const grade = parseFloat(row.querySelector("select")?.value);
-
-    if (!isNaN(credits) && credits > 0 && !isNaN(grade)) {
-      totalCredits += credits;
-      totalPoints += credits * grade;
-    }
-  });
-
-  const sgpa = totalCredits
-    ? (totalPoints / totalCredits).toFixed(2)
-    : "0.00";
-
-  $("results").textContent = "SGPA: " + sgpa;
-
-  saveSGPA(sgpa, $("semester").value);
-}
-
-/* ================= SAVE SGPA (MCA ONLY) ================= */
-function saveSGPA(sgpa, semester) {
-  const record = { semester, sgpa, time: Date.now() };
-  const loggedIn = localStorage.getItem("isLoggedIn") === "true";
-
-  if (loggedIn) {
-    const arr =
-      JSON.parse(localStorage.getItem("mcaSgpaData")) || [];
-    arr.push(record);
-    localStorage.setItem("mcaSgpaData", JSON.stringify(arr));
-  } else {
-    sessionStorage.setItem("mcaLastSGPA", JSON.stringify(record));
-  }
-}
-
 /* ================= AUTH UI ================= */
-const authButtons = $("authButtons");
-const profileBadge = $("profileBadge");
-const profileInitial = $("profileInitial");
-
 auth.onAuthStateChanged(user => {
+  const authBtns = $("authButtons");
+  const badge = $("profileBadge");
+  const initial = $("profileInitial");
+
+  if (!authBtns || !badge) return;
+
   if (user) {
-    authButtons.style.display = "none";
-    profileBadge.classList.remove("hidden");
-    profileInitial.textContent =
-      user.displayName?.charAt(0).toUpperCase() || "U";
-    localStorage.setItem("isLoggedIn", "true");
+    authBtns.style.display = "none";
+    badge.classList.remove("hidden");
+    if (initial) {
+      initial.textContent = user.displayName?.[0]?.toUpperCase() || "U";
+    }
   } else {
-    authButtons.style.display = "flex";
-    profileBadge.classList.add("hidden");
-    localStorage.setItem("isLoggedIn", "false");
+    authBtns.style.display = "flex";
+    badge.classList.add("hidden");
   }
 });
 
 /* ================= EVENTS ================= */
-$("semester").addEventListener("change", loadSubjects);
-$("add-subject").addEventListener("click", addManualSubject);
+$("semester")?.addEventListener("change", loadSubjects);
+$("add-subject")?.addEventListener("click", () => {
+  createRow("", "");
+});
 
-$("subjects").addEventListener("change", calculateSGPA);
-$("subjects").addEventListener("click", e => {
+$("subjects")?.addEventListener("change", calculateSGPA);
+$("subjects")?.addEventListener("click", e => {
   if (e.target.classList.contains("drop-btn")) {
     e.target.closest("tr").remove();
     calculateSGPA();
   }
 });
 
-profileBadge.addEventListener("click", e => {
-  e.stopPropagation();
-  $("profilePanel").classList.toggle("hidden");
-});
+$("loginBtn") && ($("loginBtn").onclick = googleLogin);
+$("registerBtn") && ($("registerBtn").onclick = googleLogin);
 
-document.addEventListener("click", () =>
-  $("profilePanel").classList.add("hidden")
-);
-
-$("logoutBtn").addEventListener("click", async () => {
+$("logoutBtn")?.addEventListener("click", async () => {
+  await signOut(auth);
   localStorage.clear();
   sessionStorage.clear();
-  if (auth.currentUser) await signOut(auth);
-  window.location.replace("login.html");
+  location.replace("login.html");
 });
 
-$("editProfileBtn").onclick = () =>
-  window.location.href = "form.html";
-
-$("loginBtn").onclick = () =>
-  window.location.href = "login.html";
-
-$("registerBtn").onclick = () =>
-  window.location.href = "login.html";
-
 /* ================= INIT ================= */
-populateSemesterDropdown();
-loadSubjects();
+document.addEventListener("DOMContentLoaded", () => {
+  populateSemesterDropdown();
+  loadSubjects();
+});

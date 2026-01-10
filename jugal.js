@@ -1,7 +1,10 @@
 /* ================= FIREBASE ================= */
 import { auth } from "./firebase.js";
-import { signOut }
-from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import {
+  GoogleAuthProvider,
+  signInWithPopup,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 /* ================= CSV ================= */
 const SHEET_CSV_URL =
@@ -16,14 +19,20 @@ const normalize = v => String(v || "").replace(/\s+/g, "").toUpperCase();
 let profile = null;
 let sheetCache = null;
 
-/* ================= PROFILE LOADING ================= */
+/* ================= PROFILE ================= */
 function loadProfile() {
-  // Logged-in users → persistent
-  if (localStorage.getItem("isLoggedIn") === "true") {
-    return JSON.parse(localStorage.getItem("profile"));
-  }
-  // Guests → session-only
-  return JSON.parse(sessionStorage.getItem("profile"));
+  return (
+    JSON.parse(localStorage.getItem("profile")) ||
+    JSON.parse(sessionStorage.getItem("profile"))
+  );
+}
+
+function getGuestProfile() {
+  return {
+    admissionMode: "Regular",
+    branch: "IT",
+    scheme: "NEP"
+  };
 }
 
 /* ================= SEMESTER LOGIC ================= */
@@ -45,7 +54,7 @@ function populateSemesterDropdown() {
   });
 }
 
-/* ================= LOAD CSV ONCE ================= */
+/* ================= LOAD CSV ================= */
 function loadSheetOnce() {
   return new Promise(resolve => {
     if (sheetCache) return resolve(sheetCache);
@@ -91,6 +100,7 @@ async function loadSubjects() {
   if (!tbody) return;
 
   tbody.innerHTML = "";
+
   const semester = $("semester").value;
   const data = await loadSheetOnce();
 
@@ -163,8 +173,9 @@ function calculateSGPA() {
 /* ================= SAVE SGPA ================= */
 function saveSGPA(sgpa, semester) {
   const record = { semester, sgpa, time: Date.now() };
+  const loggedIn = localStorage.getItem("isLoggedIn") === "true";
 
-  if (localStorage.getItem("isLoggedIn") === "true") {
+  if (loggedIn) {
     const arr = JSON.parse(localStorage.getItem("sgpaData")) || [];
     arr.push(record);
     localStorage.setItem("sgpaData", JSON.stringify(arr));
@@ -177,6 +188,7 @@ function saveSGPA(sgpa, semester) {
 const authButtons = $("authButtons");
 const profileBadge = $("profileBadge");
 const profileInitial = $("profileInitial");
+const provider = new GoogleAuthProvider();
 
 auth.onAuthStateChanged(user => {
   if (user) {
@@ -192,14 +204,17 @@ auth.onAuthStateChanged(user => {
   }
 });
 
-/* ================= INIT (CRITICAL GUARD) ================= */
-profile = loadProfile();
-
-if (!profile) {
-  // New device / incognito / fresh visit
-  window.location.replace("login.html");
+/* ================= GOOGLE LOGIN (NO REDIRECT) ================= */
+async function openGoogleLogin() {
+  try {
+    await signInWithPopup(auth, provider);
+  } catch (e) {
+    console.warn("Login cancelled");
+  }
 }
 
+/* ================= INIT ================= */
+profile = loadProfile() || getGuestProfile();
 populateSemesterDropdown();
 loadSubjects();
 
@@ -224,6 +239,7 @@ document.addEventListener("click", () =>
   $("profilePanel").classList.add("hidden")
 );
 
+/* ================= LOGOUT ================= */
 $("logoutBtn").addEventListener("click", async () => {
   localStorage.clear();
   sessionStorage.clear();
@@ -231,11 +247,10 @@ $("logoutBtn").addEventListener("click", async () => {
   window.location.replace("login.html");
 });
 
+/* ================= PROFILE ================= */
 $("editProfileBtn").onclick = () =>
   window.location.href = "form.html";
 
-$("loginBtn").onclick = () =>
-  window.location.href = "login.html";
-
-$("registerBtn").onclick = () =>
-  window.location.href = "login.html";
+/* ================= LOGIN / REGISTER ================= */
+$("loginBtn").onclick = openGoogleLogin;
+$("registerBtn").onclick = openGoogleLogin;

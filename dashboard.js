@@ -137,7 +137,8 @@ if (sgpaBtn) {
     if (program === "MCA") {
       window.location.href = "mca.html";
     } else {
-      window.location.href = "index.html";
+      window.location.href = "sgpa.html";
     }
   });
 }
+

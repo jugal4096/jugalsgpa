@@ -10,7 +10,23 @@ import {
 const $ = id => document.getElementById(id);
 const provider = new GoogleAuthProvider();
 
-/* ================= SAFE ELEMENTS ================= */
+/* ================= PROGRAM ================= */
+const program =
+  localStorage.getItem("program") ||
+  sessionStorage.getItem("program") ||
+  "BTECH";
+
+/* ================= PROFILE ================= */
+function loadProfile() {
+  return (
+    JSON.parse(localStorage.getItem("profile")) ||
+    JSON.parse(sessionStorage.getItem("profile"))
+  );
+}
+
+const profile = loadProfile() || { admissionMode: "Regular" };
+
+/* ================= AUTH UI ================= */
 const authButtons = $("authButtons");
 const profileBadge = $("profileBadge");
 const profileInitial = $("profileInitial");
@@ -18,38 +34,21 @@ const profilePanel = $("profilePanel");
 
 const loginBtn = $("loginBtn");
 const registerBtn = $("registerBtn");
-
-const loginPopup = $("loginPopup");
-const popupLoginBtn = $("popupLoginBtn");
-const popupLaterBtn = $("popupLaterBtn");
-
-const changeProgramBtn = $("changeProgramBtn");
-const editProfileBtn = $("editProfileBtn");
 const logoutBtn = $("logoutBtn");
+const editProfileBtn = $("editProfileBtn");
 
-const sgpaBtn = $("sgpaBtn");
-
-/* ================= INITIAL STATE ================= */
-profilePanel && profilePanel.classList.add("hidden");
-loginPopup && loginPopup.classList.add("hidden");
-
-/* ================= AUTH STATE ================= */
 auth.onAuthStateChanged(user => {
   if (!authButtons || !profileBadge) return;
 
   if (user) {
     authButtons.style.display = "none";
     profileBadge.classList.remove("hidden");
-    if (profileInitial) {
-      profileInitial.textContent =
-        user.displayName?.charAt(0).toUpperCase() || "U";
-    }
-    localStorage.setItem("isLoggedIn", "true");
+    profileInitial.textContent =
+      user.displayName?.charAt(0).toUpperCase() || "U";
   } else {
     authButtons.style.display = "flex";
     profileBadge.classList.add("hidden");
-    profilePanel && profilePanel.classList.add("hidden");
-    localStorage.setItem("isLoggedIn", "false");
+    profilePanel.classList.add("hidden");
   }
 });
 
@@ -57,43 +56,13 @@ auth.onAuthStateChanged(user => {
 async function googleLogin() {
   try {
     await signInWithPopup(auth, provider);
-    loginPopup && loginPopup.classList.add("hidden");
   } catch {
     console.warn("Login cancelled");
   }
 }
 
-/* ================= LOGIN / REGISTER ================= */
 loginBtn && (loginBtn.onclick = googleLogin);
 registerBtn && (registerBtn.onclick = googleLogin);
-popupLoginBtn && (popupLoginBtn.onclick = googleLogin);
-
-popupLaterBtn &&
-  (popupLaterBtn.onclick = () =>
-    loginPopup.classList.add("hidden"));
-
-/* ================= PROFILE PANEL ================= */
-profileBadge &&
-  (profileBadge.onclick = e => {
-    e.stopPropagation();
-    profilePanel.classList.toggle("hidden");
-  });
-
-document.addEventListener("click", () =>
-  profilePanel && profilePanel.classList.add("hidden")
-);
-
-/* ================= PROFILE ACTIONS ================= */
-changeProgramBtn &&
-  (changeProgramBtn.onclick = () => {
-    localStorage.removeItem("program");
-    sessionStorage.removeItem("program");
-    location.replace("select.html");
-  });
-
-editProfileBtn &&
-  (editProfileBtn.onclick = () =>
-    location.href = "form.html");
 
 logoutBtn &&
   (logoutBtn.onclick = async () => {
@@ -103,22 +72,137 @@ logoutBtn &&
     location.replace("login.html");
   });
 
-/* =================================================
-   🎯 SGPA ROUTING (THIS IS THE FIX YOU WANT)
-   ================================================= */
-if (sgpaBtn) {
-  sgpaBtn.addEventListener("click", e => {
-    e.preventDefault();
+editProfileBtn &&
+  (editProfileBtn.onclick = () =>
+    location.href = "form.html");
 
-    const program =
-      localStorage.getItem("program") ||
-      sessionStorage.getItem("program") ||
-      "BTECH";
+/* ================= PROFILE PANEL ================= */
+profileBadge &&
+  (profileBadge.onclick = e => {
+    e.stopPropagation();
+    profilePanel.classList.toggle("hidden");
+  });
 
-    if (program === "MCA") {
-      window.location.href = "mca.html";
-    } else {
-      window.location.href = "sgpa.html";
+document.addEventListener("click", () =>
+  profilePanel.classList.add("hidden")
+);
+
+/* ================= SEMESTER RANGE ================= */
+function getSemesterRange() {
+  if (program === "MCA" || program === "MTECH") {
+    return { start: 1, end: 4 };
+  }
+
+  if (profile.admissionMode === "Direct Second Year")
+    return { start: 3, end: 8 };
+
+  if (profile.admissionMode === "Direct Third Year")
+    return { start: 5, end: 8 };
+
+  return { start: 1, end: 8 };
+}
+
+const { start, end } = getSemesterRange();
+
+/* ================= CGPA TABLE ================= */
+const tbody = document.querySelector("#cgpa-table tbody");
+
+/* ================= NEXT SEMESTER ================= */
+function getNextSemester() {
+  const used = [...tbody.querySelectorAll("tr")].map(
+    r => Number(r.dataset.sem)
+  );
+
+  for (let s = start; s <= end; s++) {
+    if (!used.includes(s)) return s;
+  }
+  return null;
+}
+
+/* ================= ADD ROW ================= */
+function addSemesterRow(sem) {
+  const tr = document.createElement("tr");
+  tr.dataset.sem = sem;
+
+  tr.innerHTML = `
+    <td>Semester ${sem}</td>
+    <td><input type="number" min="1" placeholder="Credits"></td>
+    <td><input type="number" min="0" max="10" step="0.01" placeholder="SGPA"></td>
+    <td><button class="drop-btn">✖</button></td>
+  `;
+
+  tbody.appendChild(tr);
+}
+
+/* ================= LIMIT POPUP ================= */
+const limitPopup = $("limitPopup");
+const closePopup = $("closePopup");
+
+function showLimitPopup() {
+  if (!limitPopup) return;
+
+  const msg = limitPopup.querySelector("p");
+
+  if (program === "MCA" || program === "MTECH") {
+    msg.innerHTML =
+      "Hey dude 😄<br/>Does 3rd year exist too?<br/><b>MCA ends at 4th semester only!</b>";
+  } else {
+    msg.innerHTML =
+      "Hey dude 😅<br/>Does 5th year exist too?<br/><b>B.Tech ends at 8 semesters only!</b>";
+  }
+
+  limitPopup.classList.remove("hidden");
+}
+
+closePopup &&
+  (closePopup.onclick = () =>
+    limitPopup.classList.add("hidden"));
+
+/* ================= ADD SEM BUTTON ================= */
+$("add-sem").addEventListener("click", () => {
+  const next = getNextSemester();
+
+  if (!next) {
+    showLimitPopup();
+    return;
+  }
+
+  addSemesterRow(next);
+});
+
+/* ================= CGPA CALC ================= */
+function calculateCGPA() {
+  let totalCredits = 0;
+  let totalPoints = 0;
+
+  tbody.querySelectorAll("tr").forEach(row => {
+    const credits =
+      parseFloat(row.children[1].querySelector("input").value);
+    const sgpa =
+      parseFloat(row.children[2].querySelector("input").value);
+
+    if (!isNaN(credits) && credits > 0 && !isNaN(sgpa)) {
+      totalCredits += credits;
+      totalPoints += credits * sgpa;
     }
   });
+
+  const cgpa = totalCredits
+    ? (totalPoints / totalCredits).toFixed(2)
+    : "0.00";
+
+  $("cgpa-result").textContent = `CGPA: ${cgpa}`;
 }
+
+/* ================= EVENTS ================= */
+tbody.addEventListener("input", calculateCGPA);
+
+tbody.addEventListener("click", e => {
+  if (e.target.classList.contains("drop-btn")) {
+    e.target.closest("tr").remove();
+    calculateCGPA();
+  }
+});
+
+/* ================= INIT ================= */
+addSemesterRow(start);

@@ -206,3 +206,24 @@ tbody.addEventListener("click", e => {
 
 /* ================= INIT ================= */
 addSemesterRow(start);
+/* =================================================
+   🔁 GO TO SGPA (PROGRAM-AWARE FIX)
+   ================================================= */
+const goToSgpaBtn = document.getElementById("goToSgpaBtn");
+
+if (goToSgpaBtn) {
+  goToSgpaBtn.addEventListener("click", e => {
+    e.preventDefault();
+
+    const program =
+      localStorage.getItem("program") ||
+      sessionStorage.getItem("program") ||
+      "BTECH";
+
+    if (program === "MCA") {
+      window.location.href = "mca.html";
+    } else {
+      window.location.href = "sgpa.html";
+    }
+  });
+}

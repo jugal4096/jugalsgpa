@@ -118,3 +118,18 @@ groupChatBtn.onclick = () =>
 
 closeComingSoonBtn.onclick = () =>
   comingSoonPopup.classList.add("hidden");
+if (sgpaBtn) {
+  sgpaBtn.addEventListener("click", e => {
+    e.preventDefault();
+
+    const program =
+      localStorage.getItem("program") ||
+      sessionStorage.getItem("program");
+
+    if (program === "MCA") {
+      window.location.href = "mca.html";
+    } else {
+      window.location.href = "sgpa.html";
+    }
+  });
+}

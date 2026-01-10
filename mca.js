@@ -1,26 +1,21 @@
 /* ================= FIREBASE ================= */
 import { auth } from "./firebase.js";
-import {
-  signOut,
-  onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { signOut }
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-/* ================= CSV ================= */
+/* ================= MCA CSV ================= */
 const MCA_SHEET_CSV_URL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vQBScbDNIhfmJbX1vbZHjhaZAumvPpAhhOn3jVIl22aRO_5Oo_n35VJV7TllnTEbTgImZXgrp69QkY1/pub?output=csv";
 
 /* ================= HELPERS ================= */
 const $ = id => document.getElementById(id);
 
-function safeOn(el, event, handler) {
-  if (el) el.addEventListener(event, handler);
-}
-
+/* Normalize header access (VERY IMPORTANT) */
 function getValue(row, key) {
-  const found = Object.keys(row).find(
+  const foundKey = Object.keys(row).find(
     k => k.replace(/\s+/g, "").toLowerCase() === key.toLowerCase()
   );
-  return found ? row[found] : null;
+  return foundKey ? row[foundKey] : null;
 }
 
 /* ================= PROGRAM GUARD ================= */
@@ -35,12 +30,12 @@ if (program !== "MCA") {
 /* ================= STATE ================= */
 let sheetCache = null;
 
-/* ================= SEMESTER ================= */
+/* ================= SEMESTERS ================= */
 function populateSemesterDropdown() {
   const select = $("semester");
-  if (!select) return;
-
   select.innerHTML = "";
+
+  // MCA → 1 to 6
   for (let i = 1; i <= 4; i++) {
     const opt = document.createElement("option");
     opt.value = i;
@@ -59,14 +54,14 @@ function loadSheetOnce() {
       header: true,
       skipEmptyLines: true,
       complete: res => {
-        sheetCache = res.data || [];
+        sheetCache = res.data;
         resolve(sheetCache);
       }
     });
   });
 }
 
-/* ================= ROW ================= */
+/* ================= SUBJECT ROW ================= */
 function createRow(subject, credits) {
   const tr = document.createElement("tr");
   tr.innerHTML = `
@@ -86,28 +81,24 @@ function createRow(subject, credits) {
     </td>
     <td><button class="drop-btn">❌</button></td>
   `;
-  $("subjects")?.querySelector("tbody")?.appendChild(tr);
+  $("subjects").querySelector("tbody").appendChild(tr);
 }
 
-/* ================= SUBJECT LOAD ================= */
+/* ================= LOAD SUBJECTS ================= */
 async function loadSubjects() {
-  const tbody = $("subjects")?.querySelector("tbody");
-  if (!tbody) return;
-
+  const tbody = $("subjects").querySelector("tbody");
   tbody.innerHTML = "";
-  const sem = String($("semester")?.value || "");
+
+  const selectedSemester = String($("semester").value);
   const data = await loadSheetOnce();
 
   data.forEach(row => {
-    if (
-      String(getValue(row, "semester")).trim() === sem &&
-      getValue(row, "subject") &&
-      !isNaN(getValue(row, "credits"))
-    ) {
-      createRow(
-        getValue(row, "subject"),
-        Number(getValue(row, "credits"))
-      );
+    const sem = String(getValue(row, "semester")).trim();
+    const subject = getValue(row, "subject");
+    const credits = Number(getValue(row, "credits"));
+
+    if (sem === selectedSemester && subject && !isNaN(credits)) {
+      createRow(subject, credits);
     }
   });
 
@@ -116,9 +107,6 @@ async function loadSubjects() {
 
 /* ================= MANUAL SUBJECT ================= */
 function addManualSubject() {
-  const tbody = $("subjects")?.querySelector("tbody");
-  if (!tbody) return;
-
   const tr = document.createElement("tr");
   tr.innerHTML = `
     <td><input placeholder="Subject Name"></td>
@@ -137,13 +125,13 @@ function addManualSubject() {
     </td>
     <td><button class="drop-btn">❌</button></td>
   `;
-  tbody.appendChild(tr);
+  $("subjects").querySelector("tbody").appendChild(tr);
 }
 
 /* ================= SGPA ================= */
 function calculateSGPA() {
-  let creditsSum = 0;
-  let pointsSum = 0;
+  let totalCredits = 0;
+  let totalPoints = 0;
 
   document.querySelectorAll("#subjects tbody tr").forEach(row => {
     const credits =
@@ -155,25 +143,28 @@ function calculateSGPA() {
     const grade = parseFloat(row.querySelector("select")?.value);
 
     if (!isNaN(credits) && credits > 0 && !isNaN(grade)) {
-      creditsSum += credits;
-      pointsSum += credits * grade;
+      totalCredits += credits;
+      totalPoints += credits * grade;
     }
   });
 
-  const sgpa = creditsSum
-    ? (pointsSum / creditsSum).toFixed(2)
+  const sgpa = totalCredits
+    ? (totalPoints / totalCredits).toFixed(2)
     : "0.00";
 
-  if ($("results")) $("results").textContent = `SGPA: ${sgpa}`;
-  saveSGPA(sgpa, $("semester")?.value);
+  $("results").textContent = "SGPA: " + sgpa;
+
+  saveSGPA(sgpa, $("semester").value);
 }
 
-/* ================= SAVE ================= */
+/* ================= SAVE SGPA (MCA ONLY) ================= */
 function saveSGPA(sgpa, semester) {
   const record = { semester, sgpa, time: Date.now() };
+  const loggedIn = localStorage.getItem("isLoggedIn") === "true";
 
-  if (localStorage.getItem("isLoggedIn") === "true") {
-    const arr = JSON.parse(localStorage.getItem("mcaSgpaData")) || [];
+  if (loggedIn) {
+    const arr =
+      JSON.parse(localStorage.getItem("mcaSgpaData")) || [];
     arr.push(record);
     localStorage.setItem("mcaSgpaData", JSON.stringify(arr));
   } else {
@@ -181,60 +172,61 @@ function saveSGPA(sgpa, semester) {
   }
 }
 
-/* ================= AUTH ================= */
-onAuthStateChanged(auth, user => {
+/* ================= AUTH UI ================= */
+const authButtons = $("authButtons");
+const profileBadge = $("profileBadge");
+const profileInitial = $("profileInitial");
+
+auth.onAuthStateChanged(user => {
   if (user) {
-    $("authButtons")?.classList.add("hidden");
-    $("profileBadge")?.classList.remove("hidden");
-    $("profileInitial").textContent =
+    authButtons.style.display = "none";
+    profileBadge.classList.remove("hidden");
+    profileInitial.textContent =
       user.displayName?.charAt(0).toUpperCase() || "U";
     localStorage.setItem("isLoggedIn", "true");
   } else {
-    $("authButtons")?.classList.remove("hidden");
-    $("profileBadge")?.classList.add("hidden");
+    authButtons.style.display = "flex";
+    profileBadge.classList.add("hidden");
     localStorage.setItem("isLoggedIn", "false");
   }
 });
 
 /* ================= EVENTS ================= */
-safeOn($("semester"), "change", loadSubjects);
-safeOn($("add-subject"), "click", addManualSubject);
-safeOn($("subjects"), "change", calculateSGPA);
+$("semester").addEventListener("change", loadSubjects);
+$("add-subject").addEventListener("click", addManualSubject);
 
-safeOn($("subjects"), "click", e => {
+$("subjects").addEventListener("change", calculateSGPA);
+$("subjects").addEventListener("click", e => {
   if (e.target.classList.contains("drop-btn")) {
     e.target.closest("tr").remove();
     calculateSGPA();
   }
 });
 
-safeOn($("profileBadge"), "click", e => {
+profileBadge.addEventListener("click", e => {
   e.stopPropagation();
-  $("profilePanel")?.classList.toggle("hidden");
+  $("profilePanel").classList.toggle("hidden");
 });
 
-safeOn(document, "click", () =>
-  $("profilePanel")?.classList.add("hidden")
+document.addEventListener("click", () =>
+  $("profilePanel").classList.add("hidden")
 );
 
-safeOn($("logoutBtn"), "click", async () => {
+$("logoutBtn").addEventListener("click", async () => {
   localStorage.clear();
   sessionStorage.clear();
   if (auth.currentUser) await signOut(auth);
   window.location.replace("login.html");
 });
 
-safeOn($("editProfileBtn"), "click", () =>
-  window.location.href = "form.html"
-);
+$("editProfileBtn").onclick = () =>
+  window.location.href = "form.html";
 
-safeOn($("loginBtn"), "click", () =>
-  window.location.href = "login.html"
-);
+$("loginBtn").onclick = () =>
+  window.location.href = "login.html";
 
-safeOn($("registerBtn"), "click", () =>
-  window.location.href = "login.html"
-);
+$("registerBtn").onclick = () =>
+  window.location.href = "login.html";
 
 /* ================= INIT ================= */
 populateSemesterDropdown();

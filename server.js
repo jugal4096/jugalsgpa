@@ -1,89 +1,227 @@
-/**
- * GECA AI Assistant – Final Backend
- * ----------------------------------
- * - Serves frontend + backend together
- * - ZERO CORS issues
- * - Secure API key
- */
-
 import express from "express";
-import OpenAI from "openai";
+import cors from "cors";
 import dotenv from "dotenv";
-import path from "path";
+import OpenAI from "openai";
+import fs from "fs";
 
 dotenv.config();
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
-// Middleware
+app.use(cors());
 app.use(express.json());
 
-// ✅ Serve frontend files
-app.use(express.static("public"));
+/* ===============================
+LOAD KNOWLEDGE FILES
+================================ */
 
-// OpenAI client
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
+let nep = "";
+let cbcs = "";
+let jugalProfile = "";
+
+/* developer profile */
+
+try {
+
+jugalProfile = fs.readFileSync(
+"./knowledge/jugal_profile.txt",
+"utf8"
+);
+
+console.log("Developer profile loaded");
+
+} catch {
+
+console.log("Developer profile not found");
+
+}
+
+/* NEP knowledge */
+
+try {
+
+nep = fs.readFileSync(
+"./knowledge/nep.txt",
+"utf8"
+);
+
+console.log("NEP knowledge loaded");
+
+} catch {
+
+console.log("nep.txt not found");
+
+}
+
+/* CBCS knowledge */
+
+try {
+
+cbcs = fs.readFileSync(
+"./knowledge/ncbcs.txt",
+"utf8"
+);
+
+console.log("CBCS knowledge loaded");
+
+} catch {
+
+console.log("ncbcs.txt not found");
+
+}
+
+
+/* ===============================
+SEARCH RELEVANT TEXT
+================================ */
+
+function getRelevantText(doc, query){
+
+if(!doc) return "";
+
+const words = query.toLowerCase().split(" ");
+
+const lines = doc.split("\n");
+
+const matches = lines.filter(line =>
+words.some(word =>
+line.toLowerCase().includes(word)
+)
+);
+
+return matches.slice(0,8).join("\n");
+
+}
+
+
+/* ===============================
+AI CLIENT
+================================ */
+
+const client = new OpenAI({
+
+apiKey: process.env.GROQ_API_KEY,
+
+baseURL: "https://api.groq.com/openai/v1"
+
 });
 
-// AI endpoint
-app.post("/ai", async (req, res) => {
-  try {
-    const { message, context } = req.body;
 
-    if (!message) {
-      return res.status(400).json({ error: "Message required" });
-    }
+/* ===============================
+AI ROUTE
+================================ */
 
-    const systemPrompt = `
-You are a friendly senior GECA engineering student.
-Help juniors plan SGPA and CGPA realistically.
+app.post("/ai", async (req,res)=>{
 
-Rules:
-- No judgement
-- Simple Indian college tone
-- Honest feasibility
-- No lectures
-- Never say "as an AI model"
+try{
 
-Student Context:
-${JSON.stringify(context, null, 2)}
-`;
+const userMessage = (req.body.message || "").toLowerCase();
 
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4.1-mini",
-      temperature: 0.4,
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: message }
-      ]
-    });
+console.log("User:", userMessage);
 
-    res.json({
-      reply: completion.choices[0].message.content
-    });
+let sourceDoc = "";
 
-  } catch (err) {
-    console.error("AI ERROR:", err);
-    res.status(500).json({ error: "AI failed" });
-  }
+
+/* detect scheme */
+
+if(userMessage.includes("nep")){
+
+sourceDoc = nep;
+
+}
+
+else if(
+
+userMessage.includes("cbcs") ||
+userMessage.includes("credit") ||
+userMessage.includes("semester")
+
+){
+
+sourceDoc = cbcs;
+
+}
+
+
+/* extract relevant knowledge */
+
+const knowledge = getRelevantText(sourceDoc,userMessage);
+
+
+/* AI request */
+
+const completion = await client.chat.completions.create({
+
+model:"llama-3.1-8b-instant",
+
+messages:[
+
+{
+role:"system",
+content:`
+
+You are GECA's Panda 🐼.
+
+You are an AI academic assistant for students of
+Government College of Engineering Aurangabad.
+
+Important fact:
+You were created by Jugal Pakhare, an IT engineering student.
+
+If someone asks:
+Who created you
+Who is your developer
+Who made you
+
+You must reply:
+"I was created by Jugal Pakhare, an IT engineering student at GECA."
+
+Developer information:
+
+${jugalProfile}
+
+Academic knowledge:
+
+${knowledge}
+
+Respond in a friendly helpful tone.
+
+`
+},
+
+{
+role:"user",
+content:userMessage
+}
+
+]
+
 });
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`✅ Server running at http://localhost:${PORT}`);
+const reply = completion.choices[0].message.content;
+
+res.json({reply});
+
+}catch(error){
+
+console.log("API ERROR:",error.message);
+
+res.json({
+reply:"🐼 Panda couldn't answer right now"
 });
-app.get("/test-ai", async (req, res) => {
-    try {
-      const r = await openai.chat.completions.create({
-        model: "gpt-4.1-mini",
-        messages: [{ role: "user", content: "Say hello" }]
-      });
-      res.send(r.choices[0].message.content);
-    } catch (e) {
-      console.error(e);
-      res.status(500).send("OpenAI failed");
-    }
-  });
-  
+
+}
+
+});
+
+
+/* ===============================
+START SERVER
+================================ */
+
+app.listen(PORT,()=>{
+
+console.log("🐼 AI running on port",PORT);
+
+});

@@ -1,46 +1,72 @@
 /* ===============================
-FONT
+GENERAL
 ================================ */
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
 
 *{
 margin:0;
 padding:0;
 box-sizing:border-box;
-font-family:'Inter',sans-serif;
+font-family:"Segoe UI",system-ui,sans-serif;
 }
-
-/* ===============================
-BODY
-================================ */
 
 body{
-
-background:linear-gradient(180deg,#0f172a,#020617);
+background:#020617;
 color:white;
-
 height:100vh;
-display:flex;
-flex-direction:column;
-
-overflow:hidden;
-
 }
+
+
 
 /* ===============================
-CHAT UI
+INTRO SCREEN (UNCHANGED)
 ================================ */
 
-#chatUI{
+#introScreen{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:black;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+transition:opacity 0.8s;
+z-index:10;
+}
 
-flex:1;
+#introScreen video{
+width:420px;
+max-width:90%;
+border-radius:20px;
+margin-bottom:20px;
+}
+
+#introScreen h1{
+font-size:36px;
+color:white;
+text-align:center;
+}
+
+
+
+/* ===============================
+CHAT LAYOUT
+================================ */
+
+.container{
+
 display:flex;
 flex-direction:column;
 
 height:100vh;
 
+background:linear-gradient(180deg,#020617,#0f172a);
+
 }
+
+
 
 /* ===============================
 PANDA HEADER
@@ -50,58 +76,57 @@ PANDA HEADER
 
 display:flex;
 flex-direction:column;
+
 align-items:center;
 justify-content:center;
 
-padding:18px;
+padding:20px;
 
-background:rgba(2,6,23,.8);
-backdrop-filter:blur(10px);
+background:#020617;
 
 border-bottom:1px solid #1e293b;
 
 }
 
 .avatar img{
-width:110px;
+width:140px;
 margin-bottom:10px;
 }
 
 .avatar h2{
-font-size:22px;
+font-size:24px;
 font-weight:600;
+margin-bottom:4px;
 }
 
 .avatar p{
-font-size:14px;
 color:#94a3b8;
+font-size:14px;
 }
 
+
+
 /* ===============================
-CHAT AREA
+CHAT SECTION
 ================================ */
 
 .chat{
-
 flex:1;
 display:flex;
 flex-direction:column;
-
-max-width:900px;
-width:100%;
-margin:auto;
-
 height:100%;
-
 }
 
+
+
 /* ===============================
-MESSAGES
+MESSAGES AREA
 ================================ */
 
 .messages{
 
 flex:1;
+
 overflow-y:auto;
 
 padding:20px;
@@ -109,11 +134,13 @@ padding:20px;
 display:flex;
 flex-direction:column;
 
-gap:14px;
+gap:12px;
 
 scroll-behavior:smooth;
 
 }
+
+
 
 /* ===============================
 CHAT BUBBLES
@@ -121,17 +148,17 @@ CHAT BUBBLES
 
 .bot{
 
-background:rgba(30,41,59,.8);
+background:#1e293b;
 
 padding:14px 18px;
 
-border-radius:14px;
+border-radius:16px;
 
 max-width:80%;
 
 line-height:1.6;
 
-backdrop-filter:blur(10px);
+box-shadow:0 4px 12px rgba(0,0,0,0.25);
 
 animation:fadeIn .2s ease;
 
@@ -143,7 +170,7 @@ background:linear-gradient(135deg,#2563eb,#3b82f6);
 
 padding:14px 18px;
 
-border-radius:14px;
+border-radius:16px;
 
 margin-left:auto;
 
@@ -151,36 +178,33 @@ max-width:80%;
 
 line-height:1.6;
 
+box-shadow:0 4px 12px rgba(0,0,0,0.25);
+
 animation:fadeIn .2s ease;
 
 }
 
+
+
 /* ===============================
-INPUT BAR
+CHAT INPUT
 ================================ */
 
 .chat-input{
 
-position:fixed;
-
-bottom:0;
-left:0;
-
-width:100%;
-
 display:flex;
 
-padding:12px;
+padding:15px;
 
-background:rgba(2,6,23,.95);
-
-backdrop-filter:blur(10px);
+background:#020617;
 
 border-top:1px solid #1e293b;
 
 gap:10px;
 
 }
+
+
 
 /* INPUT */
 
@@ -207,10 +231,10 @@ transition:.2s;
 }
 
 .chat-input input:focus{
-
 background:#263548;
-
 }
+
+
 
 /* SEND BUTTON */
 
@@ -235,23 +259,25 @@ transition:.2s;
 }
 
 .chat-input button:hover{
-
 transform:scale(1.05);
-
 }
+
+
 
 /* ===============================
 SCROLLBAR
 ================================ */
 
 .messages::-webkit-scrollbar{
-width:5px;
+width:6px;
 }
 
 .messages::-webkit-scrollbar-thumb{
 background:#334155;
 border-radius:10px;
 }
+
+
 
 /* ===============================
 ANIMATION
@@ -271,20 +297,39 @@ transform:translateY(0);
 
 }
 
+
+
 /* ===============================
-HIDDEN
+HIDDEN CLASS
 ================================ */
 
 .hidden{
 display:none;
 }
 
+
+
 /* ===============================
-MOBILE SPACE FIX
+MOBILE OPTIMIZATION
 ================================ */
 
-.messages{
+@media(max-width:768px){
 
-padding-bottom:90px;
+.avatar img{
+width:120px;
+}
+
+.messages{
+padding:16px;
+}
+
+.bot,
+.user{
+max-width:90%;
+}
+
+.chat-input{
+padding:12px;
+}
 
 }

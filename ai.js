@@ -1,78 +1,64 @@
 document.addEventListener("DOMContentLoaded", () => {
 
+  /* ================= INTRO VIDEO ================= */
+
+  const introScreen = document.getElementById("introScreen");
+  const introVideo = document.getElementById("introVideo");
+  const chatUI = document.getElementById("chatUI");
+
+  if (introVideo) {
+
+    introVideo.onended = () => {
+
+      introScreen.style.opacity = "0";
+
+      setTimeout(() => {
+
+        introScreen.style.display = "none";
+        chatUI.classList.remove("hidden");
+
+      }, 600);
+
+    };
+
+    // allow skipping intro
+    introVideo.addEventListener("click", () => {
+
+      introVideo.currentTime = introVideo.duration;
+
+    });
+
+  }
+
   /* ================= ELEMENTS ================= */
 
-  const messagesBox = document.getElementById("aiMessages");
-  const input = document.querySelector(".ai-input input");
-  const sendBtn = document.querySelector(".ai-input button");
-  const closeBtn = document.querySelector(".ai-close");
-  const suggestionBtns = document.querySelectorAll(".ai-suggestions button");
-
-  // Profile
-  const profileCorner = document.getElementById("profileCorner");
-  const profileBadge = document.getElementById("profileBadge");
-  const profileInitial = document.getElementById("profileInitial");
-  const profileMenu = document.getElementById("profileMenu");
-  const editProfileBtn = document.getElementById("editProfileBtn");
-  const logoutBtn = document.getElementById("logoutBtn");
+  const messagesBox = document.getElementById("messages");
+  const input = document.getElementById("input");
+  const sendBtn = document.getElementById("sendBtn");
 
   let busy = false;
 
-  /* ================= PROFILE LOGIC ================= */
-
-  if (profileCorner) {
-    const profile = JSON.parse(localStorage.getItem("profile") || "{}");
-    profileInitial.textContent =
-      profile.name?.charAt(0).toUpperCase() || "U";
-  }
-
-  if (profileBadge) {
-    profileBadge.addEventListener("click", e => {
-      e.stopPropagation();
-      profileMenu.classList.toggle("hidden");
-    });
-  }
-
-  if (editProfileBtn) {
-    editProfileBtn.addEventListener("click", () => {
-      window.location.href = "form.html";
-    });
-  }
-
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", () => {
-      localStorage.clear();
-      sessionStorage.clear();
-      window.location.replace("login.html");
-    });
-  }
-
-  document.addEventListener("click", e => {
-    if (profileCorner && !profileCorner.contains(e.target)) {
-      profileMenu.classList.add("hidden");
-    }
-  });
-
   /* ================= UI HELPERS ================= */
 
-  function addMessage(text, type = "ai") {
+  function addMessage(text, type = "bot") {
 
     const div = document.createElement("div");
 
-    div.className = `ai-bubble ${type}`;
+    div.className = type;
 
     div.textContent = text;
 
     messagesBox.appendChild(div);
 
     messagesBox.scrollTop = messagesBox.scrollHeight;
+
   }
 
   function addTyping() {
 
     const div = document.createElement("div");
 
-    div.className = "ai-bubble ai";
+    div.className = "bot";
 
     div.id = "typing";
 
@@ -81,6 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
     messagesBox.appendChild(div);
 
     messagesBox.scrollTop = messagesBox.scrollHeight;
+
   }
 
   function removeTyping() {
@@ -88,16 +75,23 @@ document.addEventListener("DOMContentLoaded", () => {
     const t = document.getElementById("typing");
 
     if (t) t.remove();
+
   }
 
-  /* ================= CONTEXT ================= */
+  /* ================= STUDENT CONTEXT ================= */
 
   function getStudentContext() {
+
     return {
+
       isGuest: false,
+
       admissionMode: "Regular",
+
       semestersCompleted: 4
+
     };
+
   }
 
   /* ================= LOCAL FALLBACK AI ================= */
@@ -110,18 +104,19 @@ document.addEventListener("DOMContentLoaded", () => {
       return "Improving SGPA is possible 😊 Focus on high-credit subjects and internal marks.";
 
     if (t.includes("cgpa"))
-      return "CGPA improves slowly, but consistency each semester makes a big difference.";
-
-    if (t.includes("8"))
-      return "8+ CGPA is achievable if upcoming semesters are planned smartly.";
+      return "CGPA improves slowly, but consistency each semester helps a lot.";
 
     if (t.includes("stress"))
       return "Don't worry. Engineering is tough, but you're doing better than you think 🙂";
 
-    if (t.includes("panda"))
-      return "🐼 I am GECA's Panda — your academic companion.";
+    if (t.includes("nep"))
+      return "NEP focuses on flexible credits, multidisciplinary learning and multiple exit options.";
 
-    return "I'm currently in training phase 🤖 I'll soon give you detailed academic plans.";
+    if (t.includes("cbcs"))
+      return "CBCS allows students to choose electives and earn credits across semesters.";
+
+    return "I'm still learning 🤖 but I'll soon help you plan your academics better.";
+
   }
 
   /* ================= AI CALL ================= */
@@ -145,19 +140,22 @@ document.addEventListener("DOMContentLoaded", () => {
         },
 
         body: JSON.stringify({
+
           message: text,
+
           context: getStudentContext()
+
         })
 
       });
 
-      if (!res.ok) throw new Error("Backend not available");
+      if (!res.ok) throw new Error("Backend not reachable");
 
       const data = await res.json();
 
       removeTyping();
 
-      addMessage(data.reply || localAIReply(text), "ai");
+      addMessage(data.reply || localAIReply(text), "bot");
 
     }
 
@@ -165,60 +163,36 @@ document.addEventListener("DOMContentLoaded", () => {
 
       removeTyping();
 
-      addMessage(localAIReply(text), "ai");
+      addMessage(localAIReply(text), "bot");
 
     }
 
     busy = false;
 
     input.focus();
+
   }
 
   /* ================= EVENTS ================= */
 
-  if (sendBtn) {
+  sendBtn.onclick = () => {
 
-    sendBtn.onclick = () => {
+    const text = input.value.trim();
 
-      const text = input.value.trim();
+    if (!text) return;
 
-      if (!text) return;
+    addMessage(text, "user");
 
-      addMessage(text, "user");
+    input.value = "";
 
-      input.value = "";
+    sendToAI(text);
 
-      sendToAI(text);
-    };
+  };
 
-  }
+  input.addEventListener("keydown", e => {
 
-  if (input) {
-
-    input.addEventListener("keydown", e => {
-
-      if (e.key === "Enter") sendBtn.click();
-
-    });
-
-  }
-
-  suggestionBtns.forEach(btn => {
-
-    btn.onclick = () => {
-
-      addMessage(btn.innerText, "user");
-
-      sendToAI(btn.innerText);
-
-    };
+    if (e.key === "Enter") sendBtn.click();
 
   });
-
-  if (closeBtn) {
-
-    closeBtn.onclick = () => window.history.back();
-
-  }
 
 });

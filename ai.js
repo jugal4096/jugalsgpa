@@ -20,31 +20,35 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* ================= PROFILE LOGIC ================= */
 
-  // Show profile badge (AI page is already login-protected)
   if (profileCorner) {
     const profile = JSON.parse(localStorage.getItem("profile") || "{}");
     profileInitial.textContent =
       profile.name?.charAt(0).toUpperCase() || "U";
   }
 
-  profileBadge.addEventListener("click", e => {
-    e.stopPropagation();
-    profileMenu.classList.toggle("hidden");
-  });
+  if (profileBadge) {
+    profileBadge.addEventListener("click", e => {
+      e.stopPropagation();
+      profileMenu.classList.toggle("hidden");
+    });
+  }
 
-  editProfileBtn.addEventListener("click", () => {
-    window.location.href = "form.html";
-  });
+  if (editProfileBtn) {
+    editProfileBtn.addEventListener("click", () => {
+      window.location.href = "form.html";
+    });
+  }
 
-  logoutBtn.addEventListener("click", () => {
-    localStorage.clear();
-    sessionStorage.clear();
-    window.location.replace("login.html");
-  });
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", () => {
+      localStorage.clear();
+      sessionStorage.clear();
+      window.location.replace("login.html");
+    });
+  }
 
-  // Close profile menu when clicking outside
   document.addEventListener("click", e => {
-    if (!profileCorner.contains(e.target)) {
+    if (profileCorner && !profileCorner.contains(e.target)) {
       profileMenu.classList.add("hidden");
     }
   });
@@ -52,24 +56,37 @@ document.addEventListener("DOMContentLoaded", () => {
   /* ================= UI HELPERS ================= */
 
   function addMessage(text, type = "ai") {
+
     const div = document.createElement("div");
+
     div.className = `ai-bubble ${type}`;
+
     div.textContent = text;
+
     messagesBox.appendChild(div);
+
     messagesBox.scrollTop = messagesBox.scrollHeight;
   }
 
   function addTyping() {
+
     const div = document.createElement("div");
+
     div.className = "ai-bubble ai";
+
     div.id = "typing";
-    div.textContent = "Thinking…";
+
+    div.textContent = "🐼 Panda is thinking...";
+
     messagesBox.appendChild(div);
+
     messagesBox.scrollTop = messagesBox.scrollHeight;
   }
 
   function removeTyping() {
+
     const t = document.getElementById("typing");
+
     if (t) t.remove();
   }
 
@@ -77,7 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function getStudentContext() {
     return {
-      isGuest: false, // AI page only opens for logged-in users
+      isGuest: false,
       admissionMode: "Regular",
       semestersCompleted: 4
     };
@@ -86,6 +103,7 @@ document.addEventListener("DOMContentLoaded", () => {
   /* ================= LOCAL FALLBACK AI ================= */
 
   function localAIReply(text) {
+
     const t = text.toLowerCase();
 
     if (t.includes("sgpa"))
@@ -98,64 +116,109 @@ document.addEventListener("DOMContentLoaded", () => {
       return "8+ CGPA is achievable if upcoming semesters are planned smartly.";
 
     if (t.includes("stress"))
-      return "Don’t worry. Engineering is tough, but you’re doing better than you think 🙂";
+      return "Don't worry. Engineering is tough, but you're doing better than you think 🙂";
 
-    return "I’m currently in training phase 🤖 I’ll soon give you detailed academic plans.";
+    if (t.includes("panda"))
+      return "🐼 I am GECA's Panda — your academic companion.";
+
+    return "I'm currently in training phase 🤖 I'll soon give you detailed academic plans.";
   }
 
-  /* ================= AI CALL (SAFE MODE) ================= */
+  /* ================= AI CALL ================= */
 
   async function sendToAI(text) {
+
     if (busy) return;
+
     busy = true;
+
     addTyping();
 
     try {
-      const res = await fetch("/ai", {
+
+      const res = await fetch("https://geca-panda-1.onrender.com/ai", {
+
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+
+        headers: {
+          "Content-Type": "application/json"
+        },
+
         body: JSON.stringify({
           message: text,
           context: getStudentContext()
         })
+
       });
 
       if (!res.ok) throw new Error("Backend not available");
 
       const data = await res.json();
+
       removeTyping();
+
       addMessage(data.reply || localAIReply(text), "ai");
 
-    } catch {
+    }
+
+    catch (err) {
+
       removeTyping();
+
       addMessage(localAIReply(text), "ai");
+
     }
 
     busy = false;
+
     input.focus();
   }
 
   /* ================= EVENTS ================= */
 
-  sendBtn.onclick = () => {
-    const text = input.value.trim();
-    if (!text) return;
-    addMessage(text, "user");
-    input.value = "";
-    sendToAI(text);
-  };
+  if (sendBtn) {
 
-  input.addEventListener("keydown", e => {
-    if (e.key === "Enter") sendBtn.click();
-  });
+    sendBtn.onclick = () => {
+
+      const text = input.value.trim();
+
+      if (!text) return;
+
+      addMessage(text, "user");
+
+      input.value = "";
+
+      sendToAI(text);
+    };
+
+  }
+
+  if (input) {
+
+    input.addEventListener("keydown", e => {
+
+      if (e.key === "Enter") sendBtn.click();
+
+    });
+
+  }
 
   suggestionBtns.forEach(btn => {
+
     btn.onclick = () => {
+
       addMessage(btn.innerText, "user");
+
       sendToAI(btn.innerText);
+
     };
+
   });
 
-  closeBtn.onclick = () => window.history.back();
+  if (closeBtn) {
+
+    closeBtn.onclick = () => window.history.back();
+
+  }
 
 });

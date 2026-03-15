@@ -1,77 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8" />
-  <title>GECA AI Assistant</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Orbitron:wght@600&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<title>GECA's Panda 🐼</title>
 
-  <link rel="stylesheet" href="ai.css" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="stylesheet" href="ai.css">
+
 </head>
 
 <body>
 
-  <!-- 🎥 Animated Background Video -->
-  <video class="bg-video" autoplay muted loop playsinline>
-    <source src="Animated_Dancing_Duo_for_Website_Background.mp4" type="video/mp4">
-  </video>
-  <div class="bg-overlay"></div>
 
-  <!-- 👤 PROFILE CORNER -->
-  <div class="profile-corner" id="profileCorner">
-    <div class="profile-badge" id="profileBadge" title="Profile">
-      <span id="profileInitial">U</span>
-    </div>
+<!-- INTRO -->
 
-    <!-- Dropdown Menu -->
-    <div class="profile-menu hidden" id="profileMenu">
-      <button id="editProfileBtn">✏️ Edit Profile</button>
-      <button id="logoutBtn" class="danger">🚪 Logout</button>
-    </div>
-  </div>
+<div id="introScreen">
 
-  <!-- 🤖 AI PAGE -->
-  <div class="ai-page">
+<video id="introVideo" autoplay muted>
 
-    <div class="ai-card">
+<source src="YouCut_20260314_145951550.mp4" type="video/mp4">
 
-      <!-- Header -->
-      <div class="ai-header">
-        <div>
-          <h1>GECA AI</h1>
-          <p>Your calm academic companion</p>
-        </div>
-        <button class="ai-close" title="Back">✕</button>
-      </div>
+</video>
 
-      <!-- Messages -->
-      <div class="ai-messages" id="aiMessages">
-        <div class="ai-bubble ai">
-          👋 Hey! I’m your friendly GECA senior.<br>
-          I’ll help you plan SGPA, CGPA & semesters.
-        </div>
-      </div>
+<h1>Welcome to GECA's Panda 🐼</h1>
 
-      <!-- Suggestions -->
-      <div class="ai-suggestions">
-        <button>Improve my SGPA</button>
-        <button>Can I reach 8+ CGPA?</button>
-        <button>Plan my semesters</button>
-      </div>
+</div>
 
-      <!-- Input -->
-      <div class="ai-input">
-        <input type="text" placeholder="Ask me anything…" />
-        <button>➤</button>
-      </div>
 
-    </div>
+<!-- CHAT -->
 
-  </div>
+<div id="chatUI" class="hidden">
 
-  <!-- Logic -->
-  <script src="ai.js"></script>
+<div class="container">
+
+
+<!-- PANDA -->
+
+<div class="avatar">
+
+<img id="pandaGif"
+src="Picsart_26-03-14_15-19-25-327.gif">
+
+<h2>GECA's Panda 🐼</h2>
+
+<p>Your friendly academic companion</p>
+
+</div>
+
+
+<!-- CHAT AREA -->
+
+<div class="chat">
+
+<div id="messages" class="messages">
+
+<div class="bot">
+
+Hello 👋  
+I'm **GECA's Panda**.  
+Ask me anything about NEP, CBCS, SGPA or exams.
+
+</div>
+
+</div>
+
+
+<div class="chat-input">
+
+<input id="input"
+placeholder="Ask Panda anything...">
+
+<button id="sendBtn">Send</button>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<script src="ai.js"></script>
+
 </body>
 </html>
